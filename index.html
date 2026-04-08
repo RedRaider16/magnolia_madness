@@ -7,17 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-deep: #0d3320;
-    --green-rich: #1a5e36;
     --gold: #c9a84c;
     --gold-light: #e8c97a;
     --cream: #fdf6e3;
+    --green-deep: #0d3320;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--green-deep);
     font-family: 'DM Sans', sans-serif;
     color: var(--cream);
     min-height: 100vh;
@@ -28,100 +26,110 @@
     overflow: hidden;
     text-align: center;
     padding: 24px;
+    position: relative;
   }
 
-  /* Background layers */
-  body::before {
-    content: '';
+  /* ── BACKGROUND IMAGE ── */
+  .bg {
+    position: fixed;
+    inset: 0;
+    background: url('amen_corner.jpg') center center / cover no-repeat;
+    z-index: 0;
+    transform: scale(1.04);
+    animation: slowZoom 30s ease-in-out infinite alternate;
+  }
+  @keyframes slowZoom {
+    from { transform: scale(1.0); }
+    to   { transform: scale(1.08); }
+  }
+
+  /* Dark overlay — heavier at top/bottom, lighter in middle to show the beauty */
+  .bg-overlay {
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse at 20% 60%, rgba(42,110,65,.4) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 30%, rgba(201,168,76,.07) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 100%, rgba(13,51,32,.8) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+      linear-gradient(180deg,
+        rgba(5,20,10,0.82) 0%,
+        rgba(5,20,10,0.45) 35%,
+        rgba(5,20,10,0.40) 55%,
+        rgba(5,20,10,0.78) 100%
+      );
+    z-index: 1;
   }
 
-  /* Floating petals */
-  .petal {
+  /* Subtle vignette */
+  .bg-vignette {
     position: fixed;
-    font-size: 1.4rem;
-    opacity: 0;
-    animation: floatPetal linear infinite;
-    pointer-events: none;
-    z-index: 0;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+    z-index: 2;
   }
 
-  @keyframes floatPetal {
-    0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
-    10%  { opacity: 0.6; }
-    90%  { opacity: 0.4; }
-    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
-  }
-
+  /* ── CONTENT ── */
   .wrap {
     position: relative;
-    z-index: 1;
-    max-width: 700px;
+    z-index: 10;
+    max-width: 720px;
     width: 100%;
   }
 
-  /* Magnolia icon */
+  /* Magnolia */
   .hero-icon {
-    font-size: 4rem;
+    font-size: 3.5rem;
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     animation: sway 5s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(201,168,76,.4));
+    filter: drop-shadow(0 0 16px rgba(201,168,76,.5));
   }
-  @keyframes sway { 0%,100%{transform:rotate(-6deg) scale(1)} 50%{transform:rotate(6deg) scale(1.05)} }
+  @keyframes sway { 0%,100%{transform:rotate(-5deg) scale(1)} 50%{transform:rotate(5deg) scale(1.06)} }
 
-  /* Title */
   h1 {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(2.4rem, 8vw, 5rem);
+    font-size: clamp(2.6rem, 9vw, 5.5rem);
     font-weight: 900;
     color: var(--gold-light);
     letter-spacing: -0.02em;
     line-height: 1;
-    text-shadow: 0 2px 30px rgba(201,168,76,.35);
+    text-shadow:
+      0 2px 4px rgba(0,0,0,0.8),
+      0 4px 40px rgba(201,168,76,.4);
     margin-bottom: 8px;
   }
 
   .subtitle {
-    font-size: clamp(0.78rem, 2vw, 0.95rem);
-    font-weight: 300;
-    color: rgba(253,246,227,.55);
-    letter-spacing: 0.3em;
+    font-size: clamp(0.75rem, 2vw, 0.92rem);
+    font-weight: 400;
+    color: rgba(253,246,227,.65);
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
+    text-shadow: 0 1px 6px rgba(0,0,0,.7);
   }
 
-  /* Gold rule */
   .gold-rule {
-    width: 100px;
+    width: 90px;
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 0 auto 40px;
+    margin: 0 auto 36px;
   }
 
   /* Coming soon label */
   .coming-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--gold);
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    text-shadow: 0 1px 8px rgba(0,0,0,.8);
   }
 
-  /* Countdown blocks */
+  /* ── COUNTDOWN ── */
   .countdown {
     display: flex;
     justify-content: center;
-    gap: clamp(12px, 3vw, 28px);
-    margin-bottom: 40px;
+    gap: clamp(10px, 2.5vw, 24px);
+    margin-bottom: 36px;
     flex-wrap: wrap;
   }
 
@@ -129,114 +137,130 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(253,246,227,.04);
-    border: 1px solid rgba(201,168,76,.2);
-    border-radius: 16px;
-    padding: clamp(16px, 3vw, 28px) clamp(20px, 4vw, 40px);
-    min-width: clamp(72px, 15vw, 110px);
+    background: rgba(5, 20, 10, 0.65);
+    border: 1px solid rgba(201,168,76,.3);
+    border-radius: 14px;
+    padding: clamp(14px, 2.5vw, 24px) clamp(18px, 3.5vw, 36px);
+    min-width: clamp(70px, 14vw, 105px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 24px rgba(0,0,0,.4), inset 0 1px 0 rgba(201,168,76,.1);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(8px);
   }
 
   .time-block::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(201,168,76,.06) 0%, transparent 100%);
-    pointer-events: none;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,.5), transparent);
   }
 
   .time-num {
     font-family: 'DM Mono', monospace;
-    font-size: clamp(2.2rem, 7vw, 4rem);
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
     font-weight: 500;
     color: var(--gold-light);
     line-height: 1;
-    text-shadow: 0 0 30px rgba(201,168,76,.3);
-    transition: transform 0.15s ease;
+    text-shadow: 0 0 20px rgba(201,168,76,.4), 0 2px 4px rgba(0,0,0,.6);
+    transition: transform 0.12s ease;
   }
 
-  .time-num.tick {
-    transform: scale(1.08);
-  }
+  .time-num.tick { transform: scale(1.1); }
 
   .time-label {
-    font-size: clamp(0.6rem, 1.5vw, 0.72rem);
+    font-size: clamp(0.58rem, 1.4vw, 0.68rem);
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(253,246,227,.4);
-    margin-top: 8px;
+    color: rgba(253,246,227,.45);
+    margin-top: 6px;
   }
 
   .separator {
     font-family: 'DM Mono', monospace;
-    font-size: clamp(2rem, 6vw, 3.5rem);
-    color: rgba(201,168,76,.3);
+    font-size: clamp(1.8rem, 5.5vw, 3.2rem);
+    color: rgba(201,168,76,.4);
     align-self: center;
-    padding-bottom: 20px;
+    padding-bottom: 18px;
     animation: blink 1s step-end infinite;
+    text-shadow: 0 0 10px rgba(201,168,76,.3);
   }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
 
-  /* Launch message (hidden until countdown ends) */
+  /* ── LAUNCH MESSAGE ── */
   .launch-msg {
     display: none;
     font-family: 'Playfair Display', serif;
     font-size: clamp(1.4rem, 4vw, 2.2rem);
     color: var(--gold-light);
     font-weight: 700;
+    text-shadow: 0 2px 20px rgba(201,168,76,.5);
     animation: fadeIn 1s ease both;
   }
   @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-  /* Tee time info */
+  /* ── TEE INFO BOX ── */
   .tee-info {
-    background: rgba(201,168,76,.07);
-    border: 1px solid rgba(201,168,76,.18);
+    background: rgba(5,20,10,.6);
+    border: 1px solid rgba(201,168,76,.2);
     border-radius: 12px;
     padding: 16px 28px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     display: inline-block;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,.35);
   }
 
   .tee-info p {
-    font-size: 0.82rem;
-    color: rgba(253,246,227,.55);
-    letter-spacing: 0.05em;
-    line-height: 1.7;
+    font-size: clamp(0.75rem, 1.8vw, 0.84rem);
+    color: rgba(253,246,227,.6);
+    letter-spacing: 0.04em;
+    line-height: 1.8;
   }
 
-  .tee-info strong { color: rgba(253,246,227,.8); }
+  .tee-info strong { color: rgba(253,246,227,.85); }
 
-  /* Augusta tagline */
+  /* ── TAGLINE ── */
   .tagline {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    font-size: clamp(0.82rem, 2vw, 1rem);
     font-style: italic;
-    color: rgba(253,246,227,.3);
-    margin-top: 8px;
+    color: rgba(253,246,227,.35);
+    margin-top: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.6);
   }
 
-  /* Redirect notice */
+  /* ── REDIRECT NOTICE ── */
   .redirect-notice {
-    font-size: 0.72rem;
-    color: rgba(253,246,227,.25);
-    margin-top: 28px;
-    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    color: rgba(253,246,227,.22);
+    margin-top: 24px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── PHOTO CREDIT ── */
+  .photo-credit {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,.2);
+    z-index: 10;
+    letter-spacing: 0.05em;
   }
 
   @media(max-width:480px) {
     .separator { display: none; }
-    .time-block { border-radius: 12px; }
+    .countdown { gap: 8px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Floating petals -->
-<div id="petals"></div>
+<div class="bg"></div>
+<div class="bg-overlay"></div>
+<div class="bg-vignette"></div>
 
 <div class="wrap">
   <span class="hero-icon">🌸</span>
@@ -285,12 +309,12 @@
   </div>
 </div>
 
+<div class="photo-credit">Amen Corner · Augusta National Golf Club</div>
+
 <script>
-// ── LAUNCH TARGET: Thursday April 9 2026 6:00 AM CST (UTC-6 = 12:00 UTC) ──
-const LAUNCH = new Date('2026-04-09T12:00:00Z');
+const LAUNCH = new Date('2026-04-09T12:00:00Z'); // 6:00 AM CST = 12:00 UTC
 const LEADERBOARD_URL = 'leaderboard.html';
 
-// ── COUNTDOWN ──────────────────────────────────────────────────────────────
 const els = {
   days:    document.getElementById('days'),
   hours:   document.getElementById('hours'),
@@ -305,18 +329,16 @@ function tick(el, val){
   if(el.textContent !== str){
     el.textContent = str;
     el.classList.remove('tick');
-    void el.offsetWidth; // reflow
+    void el.offsetWidth;
     el.classList.add('tick');
-    setTimeout(()=>el.classList.remove('tick'), 150);
+    setTimeout(()=>el.classList.remove('tick'), 120);
   }
 }
 
 function updateCountdown(){
-  const now  = new Date();
-  const diff = LAUNCH - now;
+  const diff = LAUNCH - new Date();
 
   if(diff <= 0){
-    // Launch!
     document.getElementById('countdown').style.display = 'none';
     document.querySelector('.coming-label').style.display = 'none';
     document.getElementById('redirect-notice').style.display = 'none';
@@ -325,37 +347,16 @@ function updateCountdown(){
     return;
   }
 
-  const totalSecs = Math.floor(diff / 1000);
-  const d = Math.floor(totalSecs / 86400);
-  const h = Math.floor((totalSecs % 86400) / 3600);
-  const m = Math.floor((totalSecs % 3600) / 60);
-  const s = totalSecs % 60;
-
-  tick(els.days,    d);
-  tick(els.hours,   h);
-  tick(els.minutes, m);
-  tick(els.seconds, s);
+  const s = Math.floor(diff / 1000);
+  tick(els.days,    Math.floor(s / 86400));
+  tick(els.hours,   Math.floor((s % 86400) / 3600));
+  tick(els.minutes, Math.floor((s % 3600) / 60));
+  tick(els.seconds, s % 60);
 
   setTimeout(updateCountdown, 1000);
 }
 
 updateCountdown();
-
-// ── FLOATING PETALS ────────────────────────────────────────────────────────
-const container = document.getElementById('petals');
-const PETAL_COUNT = 18;
-
-for(let i = 0; i < PETAL_COUNT; i++){
-  const petal = document.createElement('div');
-  petal.classList.add('petal');
-  petal.textContent = '🌸';
-  petal.style.left  = `${Math.random() * 100}%`;
-  petal.style.fontSize = `${0.8 + Math.random() * 1.2}rem`;
-  petal.style.animationDuration  = `${8 + Math.random() * 14}s`;
-  petal.style.animationDelay     = `${Math.random() * 12}s`;
-  petal.style.opacity = '0';
-  container.appendChild(petal);
-}
 </script>
 </body>
 </html>
