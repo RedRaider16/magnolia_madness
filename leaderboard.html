@@ -279,7 +279,7 @@ const DAILY_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnM
 const ENTRIES_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=2051490194&single=true&output=csv";
 let dailyData=[],liveScores={},entriesData=[],overallData=[];
 function splitCSV(line){const r=[];let cur='',q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){q=!q}else if(c===','&&!q){r.push(cur);cur=''}else cur+=c;}r.push(cur);return r;}
-function parseCSV(text){const lines=text.trim().split('\n');if(lines.length<2)return[];const h=splitCSV(lines[0]).map(x=>x.trim().replace(/^"|"$/g,''));return lines.slice(1).map(l=>{const v=splitCSV(l);const o={};h.forEach((k,i)=>{o[k]=(v[i]||'').trim().replace(/^"|"$/g,'');});return o;}).filter(r=>Object.values(r).some(v=>v));}
+function parseCSV(text,skip=0){const lines=text.trim().split('\n');if(lines.length<2)return[];const h=splitCSV(lines[skip]).map(x=>x.trim().replace(/^"|"$/g,''));return lines.slice(skip+1).map(l=>{const v=splitCSV(l);const o={};h.forEach((k,i)=>{o[k]=(v[i]||'').trim().replace(/^"|"$/g,'');});return o;}).filter(r=>Object.values(r).some(v=>v));}
 function norm(n){return(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').trim();}
 function getLive(name){const k=norm(name);for(const[n,v]of Object.entries(liveScores)){if(norm(n)===k)return v;}return null;}
 function toParHTML(val){if(val===null||val===undefined||val==='')return'<span class="even-par">—</span>';const n=parseInt(val);if(isNaN(n))return`<span class="even-par">${val}</span>`;if(n<0)return`<span class="under-par">${n}</span>`;if(n>0)return`<span class="over-par">+${n}</span>`;return'<span class="even-par">E</span>';}
@@ -313,7 +313,7 @@ function calcTies(rows,prizeMap){
 // Overall
 async function loadOverall(){
   try{
-    overallData=parseCSV(await(await fetch(OVERALL_CSV+'&t='+Date.now())).text());
+    overallData=parseCSV(await(await fetch(OVERALL_CSV+'&t='+Date.now())).text(),0);
     document.getElementById('overall-loading').style.display='none';
     if(!overallData.length){document.getElementById('overall-empty').style.display='block';return;}
     const prizeMap={1:500,2:225,3:125,4:50};
@@ -348,7 +348,7 @@ async function loadOverall(){
 
 // Daily
 async function loadDaily(){
-  try{dailyData=parseCSV(await(await fetch(DAILY_CSV+'&t='+Date.now())).text());renderDaily();}
+  try{dailyData=parseCSV(await(await fetch(DAILY_CSV+'&t='+Date.now())).text(),2);renderDaily();}
   catch(e){document.getElementById('daily-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load</span>';}
 }
 function renderDaily(){
