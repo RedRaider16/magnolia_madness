@@ -6,319 +6,344 @@
 <title>Magnolia Madness – Masters Pool 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold:#c9a84c;--gold-light:#e8c97a;--cream:#fdf6e3;--green-deep:#0d3320;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-
-  body {
-    font-family:'DM Sans',sans-serif;
-    color:var(--cream);
-    min-height:100vh;
-    overflow-x:hidden;
-    position:relative;
-  }
-
-  /* ── BACKGROUND ── */
-  .bg {
-    position:fixed;inset:0;
-    background:url('amen_corner.jpg') center center / cover no-repeat;
-    z-index:0;
-    animation:slowZoom 40s ease-in-out infinite alternate;
-  }
-  @keyframes slowZoom{from{transform:scale(1)}to{transform:scale(1.06)}}
-
-  .bg-overlay {
-    position:fixed;inset:0;
-    background:linear-gradient(180deg,
-      rgba(3,12,6,0.88) 0%,
-      rgba(3,12,6,0.80) 30%,
-      rgba(3,12,6,0.82) 70%,
-      rgba(3,12,6,0.92) 100%
-    );
-    z-index:1;
-  }
-
-  .bg-vignette {
-    position:fixed;inset:0;
-    background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.6) 100%);
-    z-index:2;
-  }
-
-  .wrap{position:relative;z-index:10;max-width:1100px;margin:0 auto;padding:0 16px 60px}
-
-  /* ── HEADER ── */
-  header{text-align:center;padding:40px 20px 28px}
-  .magnolia-icon{font-size:2rem;display:block;margin-bottom:8px;animation:sway 5s ease-in-out infinite;filter:drop-shadow(0 0 12px rgba(201,168,76,.5))}
-  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-  header h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3.4rem);font-weight:900;color:var(--gold-light);letter-spacing:-.02em;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,.8),0 4px 30px rgba(201,168,76,.35)}
-  header .subtitle{font-size:clamp(.75rem,1.8vw,.9rem);font-weight:300;color:rgba(253,246,227,.55);letter-spacing:.25em;text-transform:uppercase;margin-top:6px;text-shadow:0 1px 6px rgba(0,0,0,.7)}
-  .gold-rule{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:16px auto 24px}
-  .meta-bar{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:28px;font-size:.75rem;color:rgba(253,246,227,.45);letter-spacing:.1em;text-transform:uppercase}
-  .meta-bar .dot{color:var(--gold)}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-  .live-dot{display:inline-block;width:7px;height:7px;background:#4ade80;border-radius:50%;margin-right:6px;animation:pulse 2s ease-in-out infinite}
-
-  /* ── TABS ── */
-  .tab-bar{display:flex;justify-content:center;gap:4px;margin-bottom:28px;background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:6px;backdrop-filter:blur(12px)}
-  .tab-btn{font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px;border:none;background:transparent;color:rgba(253,246,227,.4);border-radius:8px;cursor:pointer;transition:all .2s;flex:1;max-width:220px}
-  .tab-btn:hover{color:var(--gold)}
-  .tab-btn.active{background:var(--gold);color:var(--green-deep)}
-  .panel{display:none}.panel.active{display:block}
-
-  /* ── SECTION LABELS ── */
-  .section-label{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.4rem);font-weight:700;color:var(--gold-light);margin-bottom:14px;display:flex;align-items:center;gap:12px;text-shadow:0 1px 8px rgba(0,0,0,.7)}
-  .section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.35),transparent)}
-
-  /* ── ROUND SELECTOR ── */
-  .round-selector{display:flex;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-  .round-btn{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(201,168,76,.25);background:rgba(3,12,6,.5);color:rgba(253,246,227,.45);border-radius:100px;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px)}
-  .round-btn:hover{border-color:var(--gold);color:var(--gold)}
-  .round-btn.active{background:var(--gold);border-color:var(--gold);color:var(--green-deep)}
-
-  /* ── BOARD CARD ── */
-  .board-card{background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;overflow:hidden;margin-bottom:36px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
-
-  /* ── TABLE ── */
-  table{width:100%;border-collapse:collapse}
-  thead th{background:rgba(201,168,76,.12);font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);padding:13px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(201,168,76,.1)}
-  thead th.num{text-align:center}
-  tbody tr{border-bottom:1px solid rgba(253,246,227,.04);transition:background .15s;animation:fadeIn .4s ease both}
-  tbody tr:last-child{border-bottom:none}
-  tbody tr:hover{background:rgba(201,168,76,.05)}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-  td{padding:13px 16px;font-size:.88rem;color:var(--cream);vertical-align:middle}
-  td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:rgba(253,246,227,.55)}
-  .rank-cell{text-align:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;width:48px}
-  .rank-1{color:var(--gold-light)}.rank-2{color:#c0c0c0}.rank-3{color:#cd7f32}.rank-other{color:rgba(253,246,227,.3);font-size:.85rem}
-  .team-name{font-weight:600;font-size:.92rem;color:var(--cream)}
-  .owner-name{font-size:.72rem;color:rgba(253,246,227,.4);margin-top:2px}
-  .score-total{font-family:'DM Mono',monospace;font-weight:500;font-size:.98rem;color:var(--gold-light)}
-  .status-badge{display:inline-block;font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;white-space:nowrap}
-  .status-ACTIVE{background:rgba(45,125,79,.25);color:#7dd9a0;border:1px solid rgba(45,125,79,.4)}
-  .status-PENALTY{background:rgba(196,122,26,.2);color:#f0b84a;border:1px solid rgba(196,122,26,.4)}
-  .status-ELIMINATED{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.4)}
-  .status-VALID{background:rgba(45,125,79,.25);color:#7dd9a0;border:1px solid rgba(45,125,79,.4)}
-  .status-MC{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.4)}
-  .status-WD{background:rgba(100,100,100,.2);color:#aaa;border:1px solid rgba(100,100,100,.4)}
-  .under-par{color:#f0b84a;font-weight:600}
-  .over-par{color:#f08080}
-  .even-par{color:rgba(253,246,227,.7)}
-
-  /* ── LOADING / EMPTY ── */
-  .loading{text-align:center;padding:40px;color:rgba(253,246,227,.4);font-size:.83rem;letter-spacing:.1em}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
-  .empty-state{text-align:center;padding:56px 20px;color:rgba(253,246,227,.3)}
-  .empty-state .empty-icon{font-size:2.2rem;margin-bottom:10px}
-  .empty-state p{font-size:.88rem;letter-spacing:.05em}
-
-  /* ── MY TEAM ── */
-  .lookup-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
-  .lookup-select{font-family:'DM Sans',sans-serif;font-size:.88rem;padding:12px 16px;background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--cream);flex:1;min-width:200px;cursor:pointer;appearance:none;backdrop-filter:blur(10px)}
-  .lookup-select option{background:#0d2818;color:var(--cream)}
-  .lookup-select:focus{outline:none;border-color:var(--gold)}
-  .team-card{background:rgba(3,12,6,.72);border:1px solid rgba(201,168,76,.2);border-radius:16px;overflow:hidden;margin-bottom:20px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.45)}
-  .team-card-header{background:rgba(201,168,76,.1);padding:18px 22px;border-bottom:1px solid rgba(201,168,76,.12)}
-  .team-card-header h2{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--gold-light);font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.5)}
-  .team-card-header .owner{font-size:.8rem;color:rgba(253,246,227,.45);margin-top:4px}
-  .team-meta{display:flex;gap:20px;flex-wrap:wrap;padding:14px 22px;border-bottom:1px solid rgba(253,246,227,.05)}
-  .team-meta-item .label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,246,227,.3);margin-bottom:4px}
-  .team-meta-item .value{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light)}
-  .player-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;padding:18px 22px}
-  .player-mini-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px;transition:border-color .2s}
-  .player-mini-card:hover{border-color:rgba(201,168,76,.3)}
-  .tier-badge{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:5px}
-  .pname{font-weight:600;font-size:.85rem;line-height:1.3;margin-bottom:7px}
-  .live-score{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;line-height:1}
-  .live-detail{font-size:.68rem;color:rgba(253,246,227,.38);margin-top:4px}
-  .alt-card{background:rgba(255,255,255,.02);border:1px dashed rgba(201,168,76,.18);border-radius:9px;padding:11px 16px;margin:0 22px 18px;font-size:.8rem;color:rgba(253,246,227,.45)}
-  .alt-card strong{color:rgba(253,246,227,.65)}
-
-  /* ── RULES ── */
-  .rules-strip{background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:18px 22px;margin-top:6px;backdrop-filter:blur(12px)}
-  .rules-strip h3{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--gold);margin-bottom:10px;letter-spacing:.05em}
-  .rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px 22px}
-  .rule-item{font-size:.76rem;color:rgba(253,246,227,.45);line-height:1.5;padding-left:11px;border-left:2px solid rgba(201,168,76,.2)}
-  .rule-item strong{color:rgba(253,246,227,.7)}
-
-  /* ── LIVE TABLE ── */
-  .mc-row{opacity:.5}
-
-  /* ── PHOTO CREDIT ── */
-  .photo-credit{position:fixed;bottom:10px;right:14px;font-size:.6rem;color:rgba(255,255,255,.18);z-index:20;letter-spacing:.04em}
-
-  @media(max-width:640px){
-    .hide-mobile{display:none}
-    td,thead th{padding:10px 8px}
-    header{padding:28px 16px 18px}
-    .tab-btn{padding:8px 8px;font-size:.68rem}
-    .player-cards{grid-template-columns:repeat(2,1fr)}
-  }
+:root{--gold:#c9a84c;--gold-light:#e8c97a;--cream:#fdf6e3;--green-deep:#0d3320;--green-mid:#2d7d4f;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;color:var(--cream);min-height:100vh;overflow-x:hidden;position:relative;}
+.bg{position:fixed;inset:0;background:url('amen_corner.jpg') center center/cover no-repeat;z-index:0;animation:slowZoom 40s ease-in-out infinite alternate;}
+@keyframes slowZoom{from{transform:scale(1)}to{transform:scale(1.06)}}
+.bg-overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,12,6,.88) 0%,rgba(3,12,6,.80) 30%,rgba(3,12,6,.82) 70%,rgba(3,12,6,.92) 100%);z-index:1;}
+.bg-vignette{position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.6) 100%);z-index:2;}
+.wrap{position:relative;z-index:10;max-width:1100px;margin:0 auto;padding:0 16px 60px}
+.prize-banner{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:14px 20px;margin-bottom:24px;backdrop-filter:blur(12px);}
+.banner-title{font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.banner-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);}
+.banner-slots{display:flex;flex-direction:column;gap:8px;} .banner-row{display:flex;gap:10px;width:100%;} .banner-row-label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(253,246,227,.3);margin-bottom:4px;} .banner-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.2),transparent);}
+.banner-slot{background:rgba(3,12,6,.5);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:10px 14px;flex:1;min-width:110px;backdrop-filter:blur(8px);}
+.banner-slot .slot-label{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,246,227,.4);margin-bottom:4px;}
+.banner-slot .slot-prize{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light);line-height:1;}
+.banner-slot .slot-leader{font-size:.75rem;color:rgba(253,246,227,.6);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+.banner-slot .slot-tie{font-size:.62rem;color:rgba(201,168,76,.6);margin-top:2px;}
+.banner-slot.daily-slot .slot-prize{color:#7dd9a0;}
+header{text-align:center;padding:36px 20px 20px}
+.magnolia-icon{font-size:2rem;display:block;margin-bottom:8px;animation:sway 5s ease-in-out infinite;filter:drop-shadow(0 0 12px rgba(201,168,76,.5))}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+header h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,3.4rem);font-weight:900;color:var(--gold-light);letter-spacing:-.02em;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,.8),0 4px 30px rgba(201,168,76,.35)}
+header .subtitle{font-size:clamp(.75rem,1.8vw,.9rem);font-weight:300;color:rgba(253,246,227,.55);letter-spacing:.25em;text-transform:uppercase;margin-top:6px;}
+.gold-rule{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto 20px}
+.meta-bar{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:24px;font-size:.75rem;color:rgba(253,246,227,.45);letter-spacing:.1em;text-transform:uppercase}
+.meta-bar .dot{color:var(--gold)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-dot{display:inline-block;width:7px;height:7px;background:#4ade80;border-radius:50%;margin-right:6px;animation:pulse 2s ease-in-out infinite}
+.tab-bar{display:flex;justify-content:center;gap:4px;margin-bottom:24px;background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:6px;backdrop-filter:blur(12px)}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border:none;background:transparent;color:rgba(253,246,227,.4);border-radius:8px;cursor:pointer;transition:all .2s;flex:1;max-width:200px}
+.tab-btn:hover{color:var(--gold)}
+.tab-btn.active{background:var(--gold);color:var(--green-deep)}
+.panel{display:none}.panel.active{display:block}
+.section-label{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.4rem);font-weight:700;color:var(--gold-light);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.35),transparent)}
+.round-selector{display:flex;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.round-btn{font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;border:1px solid rgba(201,168,76,.25);background:rgba(3,12,6,.5);color:rgba(253,246,227,.45);border-radius:100px;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px)}
+.round-btn:hover{border-color:var(--gold);color:var(--gold)}
+.round-btn.active{background:var(--gold);border-color:var(--gold);color:var(--green-deep)}
+.board-card{background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;overflow:hidden;margin-bottom:32px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+table{width:100%;border-collapse:collapse}
+thead th{background:rgba(201,168,76,.12);font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);padding:13px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(201,168,76,.1)}
+thead th.num{text-align:center}
+tbody tr{border-bottom:1px solid rgba(253,246,227,.04);transition:background .15s;animation:fadeIn .4s ease both}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(201,168,76,.05)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+td{padding:13px 16px;font-size:.88rem;color:var(--cream);vertical-align:middle}
+td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:rgba(253,246,227,.55)}
+.rank-cell{text-align:center;font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;width:48px}
+.rank-1{color:var(--gold-light)}.rank-2{color:#c0c0c0}.rank-3{color:#cd7f32}.rank-other{color:rgba(253,246,227,.3);font-size:.85rem}
+.team-name{font-weight:600;font-size:.92rem;color:var(--cream)}
+.owner-name{font-size:.72rem;color:rgba(253,246,227,.4);margin-top:2px}
+.score-total{font-family:'DM Mono',monospace;font-weight:500;font-size:.98rem;color:var(--gold-light)}
+.prize-cell{font-family:'DM Mono',monospace;font-size:.85rem;color:#7dd9a0;font-weight:600}
+.prize-tie{font-size:.62rem;color:rgba(201,168,76,.6);display:block;margin-top:1px}
+.status-badge{display:inline-block;font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;white-space:nowrap}
+.status-ACTIVE{background:rgba(45,125,79,.25);color:#7dd9a0;border:1px solid rgba(45,125,79,.4)}
+.status-PENALTY{background:rgba(196,122,26,.2);color:#f0b84a;border:1px solid rgba(196,122,26,.4)}
+.status-ELIMINATED{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.4)}
+.status-VALID{background:rgba(45,125,79,.25);color:#7dd9a0;border:1px solid rgba(45,125,79,.4)}
+.status-MC{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.4)}
+.status-WD{background:rgba(100,100,100,.2);color:#aaa;border:1px solid rgba(100,100,100,.4)}
+.under-par{color:#f0b84a;font-weight:600}.over-par{color:#f08080}.even-par{color:rgba(253,246,227,.7)}
+.payout-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+.payout-section{background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;overflow:hidden;backdrop-filter:blur(16px);}
+.payout-section-header{background:rgba(201,168,76,.12);padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.1);}
+.payout-section-header h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);font-weight:700;}
+.payout-row{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid rgba(253,246,227,.04);}
+.payout-row:last-child{border-bottom:none;}
+.payout-row:nth-child(even){background:rgba(255,255,255,.02);}
+.payout-place{font-weight:600;font-size:.88rem;color:var(--cream);}
+.payout-amount{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:#7dd9a0;}
+.payout-leader{font-size:.72rem;color:rgba(253,246,227,.4);margin-top:2px;}
+.payout-tie-note{font-size:.62rem;color:rgba(201,168,76,.5);margin-top:1px;}
+.payout-total-row{background:rgba(201,168,76,.08);padding:12px 18px;display:flex;justify-content:space-between;border-top:1px solid rgba(201,168,76,.15);}
+.payout-total-row span{font-weight:700;font-size:.9rem;color:var(--gold);}
+.tie-explainer{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:10px;padding:12px 18px;margin-bottom:20px;font-size:.78rem;color:rgba(253,246,227,.45);line-height:1.6;}
+.tie-explainer strong{color:rgba(253,246,227,.7);}
+.loading{text-align:center;padding:40px;color:rgba(253,246,227,.4);font-size:.83rem;letter-spacing:.1em}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
+.empty-state{text-align:center;padding:56px 20px;color:rgba(253,246,227,.3)}
+.empty-state .empty-icon{font-size:2.2rem;margin-bottom:10px}
+.empty-state p{font-size:.88rem;}
+.lookup-select{font-family:'DM Sans',sans-serif;font-size:.88rem;padding:12px 16px;background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--cream);width:100%;max-width:400px;cursor:pointer;appearance:none;backdrop-filter:blur(10px);margin-bottom:24px;}
+.lookup-select option{background:#0d2818;color:var(--cream)}
+.lookup-select:focus{outline:none;border-color:var(--gold)}
+.team-card{background:rgba(3,12,6,.72);border:1px solid rgba(201,168,76,.2);border-radius:16px;overflow:hidden;margin-bottom:20px;backdrop-filter:blur(16px);}
+.team-card-header{background:rgba(201,168,76,.1);padding:18px 22px;border-bottom:1px solid rgba(201,168,76,.12)}
+.team-card-header h2{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--gold-light);font-weight:700;}
+.team-card-header .owner{font-size:.8rem;color:rgba(253,246,227,.45);margin-top:4px}
+.team-meta{display:flex;gap:20px;flex-wrap:wrap;padding:14px 22px;border-bottom:1px solid rgba(253,246,227,.05)}
+.team-meta-item .label{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,246,227,.3);margin-bottom:4px}
+.team-meta-item .value{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light)}
+.player-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;padding:18px 22px}
+.player-mini-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 14px;transition:border-color .2s}
+.player-mini-card:hover{border-color:rgba(201,168,76,.3)}
+.tier-badge{font-size:.58rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:5px}
+.pname{font-weight:600;font-size:.85rem;line-height:1.3;margin-bottom:7px}
+.live-score{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;line-height:1}
+.live-detail{font-size:.68rem;color:rgba(253,246,227,.38);margin-top:4px}
+.alt-card{background:rgba(255,255,255,.02);border:1px dashed rgba(201,168,76,.18);border-radius:9px;padding:11px 16px;margin:0 22px 18px;font-size:.8rem;color:rgba(253,246,227,.45)}
+.alt-card strong{color:rgba(253,246,227,.65)}
+.rules-strip{background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:18px 22px;margin-top:6px;backdrop-filter:blur(12px)}
+.rules-strip h3{font-family:'Playfair Display',serif;font-size:.92rem;color:var(--gold);margin-bottom:10px}
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px 22px}
+.rule-item{font-size:.76rem;color:rgba(253,246,227,.45);line-height:1.5;padding-left:11px;border-left:2px solid rgba(201,168,76,.2)}
+.rule-item strong{color:rgba(253,246,227,.7)}
+.photo-credit{position:fixed;bottom:10px;right:14px;font-size:.6rem;color:rgba(255,255,255,.18);z-index:20;}
+@media(max-width:640px){
+  .hide-mobile{display:none}
+  td,thead th{padding:10px 8px}
+  header{padding:24px 16px 14px}
+  .tab-btn{padding:8px 6px;font-size:.62rem}
+  .player-cards{grid-template-columns:repeat(2,1fr)}
+  .payout-grid{grid-template-columns:1fr}
+  .banner-slot{min-width:90px;}
+}
 </style>
 </head>
 <body>
-
 <div class="bg"></div>
 <div class="bg-overlay"></div>
 <div class="bg-vignette"></div>
-
 <div class="wrap">
-  <header>
-    <span class="magnolia-icon">🌸</span>
-    <h1>Magnolia Madness</h1>
-    <div class="subtitle">Masters Pool &nbsp;·&nbsp; Augusta National &nbsp;·&nbsp; 2026</div>
-    <div class="gold-rule"></div>
-    <div class="meta-bar">
-      <span><span class="live-dot"></span>Live Standings</span>
-      <span class="dot">·</span>
-      <span>Updated: <span id="last-updated">—</span></span>
-      <span class="dot">·</span>
-      <span>Best 4 of 5 Scoring</span>
-    </div>
-  </header>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" data-tab="pool">🏆 Pool Leaderboard</button>
-    <button class="tab-btn" data-tab="live">⛳ Live Masters Scores</button>
-    <button class="tab-btn" data-tab="myteam">👤 My Team</button>
+<header>
+  <span class="magnolia-icon">🌸</span>
+  <h1>Magnolia Madness</h1>
+  <div class="subtitle">Masters Pool · Augusta National · 2026</div>
+  <div class="gold-rule"></div>
+  <div class="meta-bar">
+    <span><span class="live-dot"></span>Live Standings</span>
+    <span class="dot">·</span>
+    <span>Updated: <span id="last-updated">—</span></span>
+    <span class="dot">·</span>
+    <span>$1,200 Prize Pool</span>
   </div>
+</header>
 
-  <!-- POOL LEADERBOARD -->
-  <div class="panel active" id="panel-pool">
-    <div class="section-label">🏆 Overall Leaderboard</div>
-    <div class="board-card">
-      <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
-      <table id="overall-table" style="display:none">
-        <thead><tr>
-          <th class="num">#</th><th>Team</th>
-          <th class="num hide-mobile">Thu</th><th class="num hide-mobile">Fri</th>
-          <th class="num hide-mobile">Sat</th><th class="num hide-mobile">Sun</th>
-          <th class="num">Total</th><th>Status</th>
-        </tr></thead>
-        <tbody id="overall-body"></tbody>
-      </table>
-      <div id="overall-empty" class="empty-state" style="display:none">
-        <div class="empty-icon">⛳</div><p>Standings appear once entries and scores are submitted</p>
-      </div>
+<!-- PRIZE BANNER -->
+<div class="prize-banner">
+  <div class="banner-title">💰 Prize Money — Live</div>
+  <div class="banner-slots">
+    <div class="banner-row-label">🏆 Overall Standings</div>
+    <div class="banner-row">
+      <div class="banner-slot"><div class="slot-label">1st Place</div><div class="slot-prize" id="b-1st-prize">$500</div><div class="slot-leader" id="b-1st-leader">—</div><div class="slot-tie" id="b-1st-tie"></div></div>
+      <div class="banner-slot"><div class="slot-label">2nd Place</div><div class="slot-prize" id="b-2nd-prize">$225</div><div class="slot-leader" id="b-2nd-leader">—</div><div class="slot-tie" id="b-2nd-tie"></div></div>
+      <div class="banner-slot"><div class="slot-label">3rd Place</div><div class="slot-prize" id="b-3rd-prize">$125</div><div class="slot-leader" id="b-3rd-leader">—</div><div class="slot-tie" id="b-3rd-tie"></div></div>
+      <div class="banner-slot"><div class="slot-label">4th Place</div><div class="slot-prize" id="b-4th-prize">$50</div><div class="slot-leader" id="b-4th-leader">—</div><div class="slot-tie" id="b-4th-tie"></div></div>
     </div>
-
-    <div class="section-label">📅 Daily Leaderboard</div>
-    <div class="round-selector">
-      <button class="round-btn active" data-round="0">Thursday</button>
-      <button class="round-btn" data-round="1">Friday</button>
-      <button class="round-btn" data-round="2">Saturday</button>
-      <button class="round-btn" data-round="3">Sunday</button>
-    </div>
-    <div class="board-card">
-      <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
-      <table id="daily-table" style="display:none">
-        <thead><tr>
-          <th class="num">#</th><th>Team</th><th>Owner</th>
-          <th class="num">Score</th><th>Status</th>
-        </tr></thead>
-        <tbody id="daily-body"></tbody>
-      </table>
-      <div id="daily-empty" class="empty-state" style="display:none">
-        <div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p>
-      </div>
-    </div>
-
-    <div class="rules-strip">
-      <h3>📋 Quick Rules</h3>
-      <div class="rules-grid">
-        <div class="rule-item"><strong>Scoring:</strong> Best 4 of 5 players each round — highest dropped daily</div>
-        <div class="rule-item"><strong>Missed Cut:</strong> Players who miss the cut receive 80 for Sat & Sun</div>
-        <div class="rule-item"><strong>Penalty:</strong> 2 missed cuts on your roster</div>
-        <div class="rule-item"><strong>Eliminated:</strong> 3 or more missed cuts on your roster</div>
-        <div class="rule-item"><strong>Withdrawal:</strong> Pre-tourney WD → alternate in. Mid-tourney → 80 for unplayed rounds</div>
-        <div class="rule-item"><strong>Tiebreaker:</strong> Lowest individual round score, then most players under par</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LIVE MASTERS SCORES -->
-  <div class="panel" id="panel-live">
-    <div class="section-label">⛳ Live Masters Leaderboard</div>
-    <div class="board-card">
-      <div id="live-loading" class="loading"><span class="spinner"></span>Fetching live scores from Augusta…</div>
-      <table id="live-table" style="display:none">
-        <thead><tr>
-          <th class="num">Pos</th><th>Player</th>
-          <th class="num">To Par</th><th class="num">Today</th><th class="num">Thru</th>
-          <th class="num hide-mobile">R1</th><th class="num hide-mobile">R2</th>
-          <th class="num hide-mobile">R3</th><th class="num hide-mobile">R4</th>
-        </tr></thead>
-        <tbody id="live-body"></tbody>
-      </table>
-      <div id="live-empty" class="empty-state" style="display:none">
-        <div class="empty-icon">🌸</div>
-        <p>Live scoring begins Thursday morning at the first tee time</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- MY TEAM -->
-  <div class="panel" id="panel-myteam">
-    <div class="section-label">👤 My Team</div>
-    <div class="lookup-bar">
-      <select class="lookup-select" id="team-select">
-        <option value="">— Select your team —</option>
-      </select>
-    </div>
-    <div id="team-display"></div>
-    <div class="empty-state" id="team-empty">
-      <div class="empty-icon">🏌️</div>
-      <p>Select your team above to see your players and live scores</p>
+    <div class="banner-divider"></div>
+    <div class="banner-row-label">📅 Daily Low Score</div>
+    <div class="banner-row">
+      <div class="banner-slot daily-slot"><div class="slot-label">Thursday</div><div class="slot-prize" id="b-thu-prize">$100</div><div class="slot-leader" id="b-thu-leader">—</div><div class="slot-tie" id="b-thu-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Friday</div><div class="slot-prize" id="b-fri-prize">$100</div><div class="slot-leader" id="b-fri-leader">—</div><div class="slot-tie" id="b-fri-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize" id="b-sat-prize">$100</div><div class="slot-leader" id="b-sat-leader">—</div><div class="slot-tie" id="b-sat-tie"></div></div>
     </div>
   </div>
 </div>
 
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="pool">🏆 Pool Leaderboard</button>
+  <button class="tab-btn" data-tab="live">⛳ Live Masters</button>
+  <button class="tab-btn" data-tab="myteam">👤 My Team</button>
+  <button class="tab-btn" data-tab="payouts">💰 Payouts</button>
+</div>
+
+<!-- POOL LEADERBOARD -->
+<div class="panel active" id="panel-pool">
+  <div class="section-label">🏆 Overall Leaderboard</div>
+  <div class="board-card">
+    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
+    <table id="overall-table" style="display:none">
+      <thead><tr><th class="num">#</th><th>Team</th><th class="num hide-mobile">Thu</th><th class="num hide-mobile">Fri</th><th class="num hide-mobile">Sat</th><th class="num hide-mobile">Sun</th><th class="num">Total</th><th>Prize</th><th>Status</th></tr></thead>
+      <tbody id="overall-body"></tbody>
+    </table>
+    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
+  </div>
+  <div class="section-label">📅 Daily Leaderboard</div>
+  <div class="round-selector">
+    <button class="round-btn active" data-round="0">Thursday</button>
+    <button class="round-btn" data-round="1">Friday</button>
+    <button class="round-btn" data-round="2">Saturday</button>
+    <button class="round-btn" data-round="3">Sunday</button>
+  </div>
+  <div class="board-card">
+    <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
+    <table id="daily-table" style="display:none">
+      <thead><tr><th class="num">#</th><th>Team</th><th>Owner</th><th class="num">Score</th><th>Prize</th><th>Status</th></tr></thead>
+      <tbody id="daily-body"></tbody>
+    </table>
+    <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
+  </div>
+  <div class="rules-strip">
+    <h3>📋 Quick Rules</h3>
+    <div class="rules-grid">
+      <div class="rule-item"><strong>Scoring:</strong> Best 4 of 5 players each round — highest dropped daily</div>
+      <div class="rule-item"><strong>Missed Cut:</strong> Players who miss the cut receive 80 for Sat & Sun</div>
+      <div class="rule-item"><strong>Penalty:</strong> 2 missed cuts on your roster</div>
+      <div class="rule-item"><strong>Eliminated:</strong> 3 or more missed cuts on your roster</div>
+      <div class="rule-item"><strong>Withdrawal:</strong> Pre-tourney WD → alternate in. Mid-tourney → 80 for unplayed rounds</div>
+      <div class="rule-item"><strong>Ties:</strong> Tied positions split combined prize money equally</div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE MASTERS -->
+<div class="panel" id="panel-live">
+  <div class="section-label">⛳ Live Masters Leaderboard</div>
+  <div class="board-card">
+    <div id="live-loading" class="loading"><span class="spinner"></span>Fetching live scores from Augusta…</div>
+    <table id="live-table" style="display:none">
+      <thead><tr><th class="num">Pos</th><th>Player</th><th class="num">To Par</th><th class="num">Today</th><th class="num">Thru</th><th class="num hide-mobile">R1</th><th class="num hide-mobile">R2</th><th class="num hide-mobile">R3</th><th class="num hide-mobile">R4</th></tr></thead>
+      <tbody id="live-body"></tbody>
+    </table>
+    <div id="live-empty" class="empty-state" style="display:none"><div class="empty-icon">🌸</div><p>Live scoring begins Thursday at the first tee time</p></div>
+  </div>
+</div>
+
+<!-- MY TEAM -->
+<div class="panel" id="panel-myteam">
+  <div class="section-label">👤 My Team</div>
+  <select class="lookup-select" id="team-select"><option value="">— Select your team —</option></select>
+  <div id="team-display"></div>
+  <div class="empty-state" id="team-empty"><div class="empty-icon">🏌️</div><p>Select your team above to see your players and live scores</p></div>
+</div>
+
+<!-- PAYOUTS -->
+<div class="panel" id="panel-payouts">
+  <div class="section-label">💰 Prize Structure</div>
+  <div class="tie-explainer">
+    <strong>Tie Rule:</strong> Tied positions combine their prize money and split equally. Example: 2 teams tie for 1st overall — they split $500 + $225 = <strong>$362.50 each</strong>. 3rd place still receives their full $125. All amounts below update live to reflect current ties.
+  </div>
+  <div class="payout-grid">
+    <div class="payout-section">
+      <div class="payout-section-header"><h3>📅 Daily Payouts</h3></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Thursday Low Score</div><div class="payout-leader" id="p-thu-leader">—</div><div class="payout-tie-note" id="p-thu-tie"></div></div><div class="payout-amount" id="p-thu-amt">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Friday Low Score</div><div class="payout-leader" id="p-fri-leader">—</div><div class="payout-tie-note" id="p-fri-tie"></div></div><div class="payout-amount" id="p-fri-amt">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Saturday Low Score</div><div class="payout-leader" id="p-sat-leader">—</div><div class="payout-tie-note" id="p-sat-tie"></div></div><div class="payout-amount" id="p-sat-amt">$100</div></div>
+      <div class="payout-total-row"><span>Daily Total</span><span>$300</span></div>
+    </div>
+    <div class="payout-section">
+      <div class="payout-section-header"><h3>🏆 Overall Payouts</h3></div>
+      <div class="payout-row"><div><div class="payout-place">🥇 1st Place</div><div class="payout-leader" id="p-1st-leader">—</div><div class="payout-tie-note" id="p-1st-tie"></div></div><div class="payout-amount" id="p-1st-amt">$500</div></div>
+      <div class="payout-row"><div><div class="payout-place">🥈 2nd Place</div><div class="payout-leader" id="p-2nd-leader">—</div><div class="payout-tie-note" id="p-2nd-tie"></div></div><div class="payout-amount" id="p-2nd-amt">$225</div></div>
+      <div class="payout-row"><div><div class="payout-place">🥉 3rd Place</div><div class="payout-leader" id="p-3rd-leader">—</div><div class="payout-tie-note" id="p-3rd-tie"></div></div><div class="payout-amount" id="p-3rd-amt">$125</div></div>
+      <div class="payout-row"><div><div class="payout-place">4️⃣ 4th Place</div><div class="payout-leader" id="p-4th-leader">—</div><div class="payout-tie-note" id="p-4th-tie"></div></div><div class="payout-amount" id="p-4th-amt">$50</div></div>
+      <div class="payout-total-row"><span>Overall Total</span><span>$900</span></div>
+    </div>
+  </div>
+  <div class="rules-strip">
+    <h3>📋 Pool Summary</h3>
+    <div class="rules-grid">
+      <div class="rule-item"><strong>Entry Fee:</strong> $50 per team</div>
+      <div class="rule-item"><strong>Total Entries:</strong> 24 teams</div>
+      <div class="rule-item"><strong>Prize Pool:</strong> $1,200</div>
+      <div class="rule-item"><strong>Daily:</strong> $100 flat per round (Thu/Fri/Sat)</div>
+      <div class="rule-item"><strong>Overall:</strong> $900 split across 4 places</div>
+      <div class="rule-item"><strong>Ties:</strong> Combined prize divided equally among tied teams</div>
+    </div>
+  </div>
+</div>
+</div>
 <div class="photo-credit">Amen Corner · Augusta National Golf Club</div>
 
 <script>
-const OVERALL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=975522755&single=true&output=csv";
-const DAILY_CSV   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=952342251&single=true&output=csv";
-const ENTRIES_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=2051490194&single=true&output=csv";
-
-let dailyData=[],liveScores={},entriesData=[];
-
-function splitCSVLine(line){
-  const r=[];let cur='',q=false;
-  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){q=!q}else if(c===','&&!q){r.push(cur);cur=''}else cur+=c;}
-  r.push(cur);return r;
-}
-function parseCSV(text){
-  const lines=text.trim().split('\n');if(lines.length<2)return[];
-  const headers=splitCSVLine(lines[0]).map(h=>h.trim().replace(/^"|"$/g,''));
-  return lines.slice(1).map(line=>{const vals=splitCSVLine(line);const obj={};headers.forEach((h,i)=>{obj[h]=(vals[i]||'').trim().replace(/^"|"$/g,'');});return obj;}).filter(r=>Object.values(r).some(v=>v));
-}
+const OVERALL_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=975522755&single=true&output=csv";
+const DAILY_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=952342251&single=true&output=csv";
+const ENTRIES_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vSj_Jw-O-QcVcnMebG95J0r1N7aKZiK7yG0dODdGIYemDgwhScvAubh_f-Lar3ok7ecAqtDQsZCcdeZ/pub?gid=2051490194&single=true&output=csv";
+let dailyData=[],liveScores={},entriesData=[],overallData=[];
+function splitCSV(line){const r=[];let cur='',q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){q=!q}else if(c===','&&!q){r.push(cur);cur=''}else cur+=c;}r.push(cur);return r;}
+function parseCSV(text){const lines=text.trim().split('\n');if(lines.length<2)return[];const h=splitCSV(lines[0]).map(x=>x.trim().replace(/^"|"$/g,''));return lines.slice(1).map(l=>{const v=splitCSV(l);const o={};h.forEach((k,i)=>{o[k]=(v[i]||'').trim().replace(/^"|"$/g,'');});return o;}).filter(r=>Object.values(r).some(v=>v));}
 function norm(n){return(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z\s]/g,'').trim();}
 function getLive(name){const k=norm(name);for(const[n,v]of Object.entries(liveScores)){if(norm(n)===k)return v;}return null;}
-function toParHTML(val){
-  if(val===null||val===undefined||val==='')return'<span class="even-par">—</span>';
-  const n=parseInt(val);if(isNaN(n))return`<span class="even-par">${val}</span>`;
-  if(n<0)return`<span class="under-par">${n}</span>`;
-  if(n>0)return`<span class="over-par">+${n}</span>`;
-  return'<span class="even-par">E</span>';
-}
+function toParHTML(val){if(val===null||val===undefined||val==='')return'<span class="even-par">—</span>';const n=parseInt(val);if(isNaN(n))return`<span class="even-par">${val}</span>`;if(n<0)return`<span class="under-par">${n}</span>`;if(n>0)return`<span class="over-par">+${n}</span>`;return'<span class="even-par">E</span>';}
 function scoreVal(v){return(!v||v===''||v==='0')?'<span style="color:rgba(253,246,227,.22)">—</span>':v;}
 function statusBadge(s){const u=(s||'ACTIVE').toUpperCase();return`<span class="status-badge status-${u}">${u}</span>`;}
 function rankCell(rank,i){const n=parseInt(rank)||(i+1);const cls=n===1?'rank-1':n===2?'rank-2':n===3?'rank-3':'rank-other';const icon=n<=3?['🥇','🥈','🥉'][n-1]:rank;return`<td class="rank-cell ${cls}">${icon}</td>`;}
+function fmt$(n){if(n===Math.floor(n))return'$'+n.toLocaleString();return'$'+n.toFixed(2);}
 
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');});});
 document.querySelectorAll('.round-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.round-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDaily();});});
 
+// Tie calculator
+function calcTies(rows,prizeMap){
+  const result={};let i=0;
+  while(i<rows.length){
+    const score=rows[i].score;let j=i;
+    while(j<rows.length&&rows[j].score===score)j++;
+    const prizes=[];
+    for(let p=i+1;p<=j;p++){if(prizeMap[p])prizes.push(prizeMap[p]);}
+    if(prizes.length>0){
+      const share=prizes.reduce((a,b)=>a+b,0)/(j-i);
+      const isTie=(j-i)>1;
+      for(let k=i;k<j;k++){result[rows[k].team]={prize:share,isTie,count:j-i};}
+    }
+    i=j;
+  }
+  return result;
+}
+
 // Overall
 async function loadOverall(){
   try{
-    const rows=parseCSV(await(await fetch(OVERALL_CSV+'&t='+Date.now())).text());
+    overallData=parseCSV(await(await fetch(OVERALL_CSV+'&t='+Date.now())).text());
     document.getElementById('overall-loading').style.display='none';
-    if(!rows.length){document.getElementById('overall-empty').style.display='block';return;}
-    document.getElementById('overall-body').innerHTML=rows.map((r,i)=>{const v=Object.values(r);return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${v[1]||'—'}</div><div class="owner-name">${v[2]||''}</div></td><td class="num hide-mobile">${scoreVal(v[3])}</td><td class="num hide-mobile">${scoreVal(v[4])}</td><td class="num hide-mobile">${scoreVal(v[5])}</td><td class="num hide-mobile">${scoreVal(v[6])}</td><td class="num score-total">${v[7]||'—'}</td><td>${statusBadge(v[8])}</td></tr>`;}).join('');
+    if(!overallData.length){document.getElementById('overall-empty').style.display='block';return;}
+    const prizeMap={1:500,2:225,3:125,4:50};
+    const sortedRows=overallData.map((r,i)=>{const v=Object.values(r);return{team:v[1]||'',score:parseFloat(v[7])||9999,rank:parseInt(v[0])||(i+1)};}).filter(r=>r.team&&r.score!==9999);
+    const prizes=calcTies(sortedRows,prizeMap);
+    document.getElementById('overall-body').innerHTML=overallData.map((r,i)=>{
+      const v=Object.values(r);const team=v[1]||'—';
+      const pi=prizes[team];
+      let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
+      if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
+      return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div><div class="owner-name">${v[2]||''}</div></td><td class="num hide-mobile">${scoreVal(v[3])}</td><td class="num hide-mobile">${scoreVal(v[4])}</td><td class="num hide-mobile">${scoreVal(v[5])}</td><td class="num hide-mobile">${scoreVal(v[6])}</td><td class="num score-total">${v[7]||'—'}</td><td>${ph}</td><td>${statusBadge(v[8])}</td></tr>`;
+    }).join('');
     document.getElementById('overall-table').style.display='table';
-  }catch(e){document.getElementById('overall-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load — check back soon</span>';}
+    // Update banner + payout tab overall
+    [1,2,3,4].forEach((place,idx)=>{
+      const id=['1st','2nd','3rd','4th'][idx];
+      const base=[500,225,125,50][idx];
+      const inPlace=sortedRows.filter((r,i)=>(parseInt(overallData[i]?Object.values(overallData[i])[0]:0)||(i+1))===place);
+      const pi=inPlace.length>0?prizes[inPlace[0].team]:null;
+      const amt=pi?pi.prize:base;
+      const leader=inPlace.length>0?inPlace[0].team:'—';
+      const isTie=pi?pi.isTie:false;
+      document.getElementById(`b-${id}-prize`).textContent=fmt$(amt);
+      document.getElementById(`b-${id}-leader`).textContent=leader;
+      document.getElementById(`b-${id}-tie`).textContent=isTie?`split ×${pi.count}`:'';
+      document.getElementById(`p-${id}-amt`).textContent=fmt$(amt);
+      document.getElementById(`p-${id}-leader`).textContent=leader;
+      document.getElementById(`p-${id}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
+    });
+  }catch(e){document.getElementById('overall-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load</span>';}
 }
 
 // Daily
@@ -331,8 +356,31 @@ function renderDaily(){
   document.getElementById('daily-empty').style.display='none';
   document.getElementById('daily-table').style.display='none';
   if(!dailyData.length){document.getElementById('daily-empty').style.display='block';return;}
-  document.getElementById('daily-body').innerHTML=dailyData.map((r,i)=>{const v=Object.values(r);return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${v[1]||'—'}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${v[2]||''}</td><td class="num score-total">${scoreVal(v[3])}</td><td>${statusBadge(v[4])}</td></tr>`;}).join('');
+  const sortedDaily=dailyData.map((r,i)=>{const v=Object.values(r);return{team:v[1]||'',score:parseFloat(v[3])||9999};}).filter(r=>r.team&&r.score!==9999);
+  const dailyPrizes=calcTies(sortedDaily,{1:100});
+  document.getElementById('daily-body').innerHTML=dailyData.map((r,i)=>{
+    const v=Object.values(r);const team=v[1]||'—';
+    const pi=dailyPrizes[team];
+    let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
+    if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
+    return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${v[2]||''}</td><td class="num score-total">${scoreVal(v[3])}</td><td>${ph}</td><td>${statusBadge(v[4])}</td></tr>`;
+  }).join('');
   document.getElementById('daily-table').style.display='table';
+  // Update banner + payout tab for active round
+  const activeBtn=document.querySelector('.round-btn.active');
+  const roundIdx=activeBtn?parseInt(activeBtn.dataset.round):0;
+  const roundKey=['thu','fri','sat'][roundIdx]||'thu';
+  const leader=sortedDaily.length>0?sortedDaily[0]:null;
+  const pi=leader?dailyPrizes[leader.team]:null;
+  const amt=pi?pi.prize:100;
+  const name=leader?leader.team:'—';
+  const isTie=pi?pi.isTie:false;
+  document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
+  document.getElementById(`b-${roundKey}-leader`).textContent=name;
+  document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
+  document.getElementById(`p-${roundKey}-amt`).textContent=fmt$(amt);
+  document.getElementById(`p-${roundKey}-leader`).textContent=name;
+  document.getElementById(`p-${roundKey}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
 }
 
 // Live ESPN
@@ -340,80 +388,51 @@ async function loadLive(){
   try{
     const data=await(await fetch('https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?t='+Date.now())).json();
     const events=data?.events||[];if(!events.length){showLiveEmpty();return;}
-    const mastersEvent=events.find(e=>(e.name||'').toLowerCase().includes('master'))||events[0];
-    const competitors=(mastersEvent?.competitions?.[0]?.competitors)||[];
-    if(!competitors.length){showLiveEmpty();return;}
+    const me=events.find(e=>(e.name||'').toLowerCase().includes('master'))||events[0];
+    const competitors=(me?.competitions?.[0]?.competitors)||[];if(!competitors.length){showLiveEmpty();return;}
     liveScores={};
     competitors.forEach(c=>{
-      const name=c.athlete?.displayName||'';
-      const ls=c.linescores||[];
-      const rounds=ls.map(l=>l.value??'').slice(0,4);while(rounds.length<4)rounds.push('');
-      const toparRaw=c.score||'';let topar=toparRaw==='E'?0:(parseInt(toparRaw)||toparRaw);
-      const todayRaw=ls.length?(ls[ls.length-1]?.value??''):'';let today=todayRaw==='E'?0:(parseInt(todayRaw)||todayRaw);
-      const thru=c.status?.thru??c.status?.displayValue??'F';
-      const sn=(c.status?.name||'').toLowerCase();
-      liveScores[name]={topar,today,thru,r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),isMC:sn.includes('cut'),isWD:sn.includes('wd')||sn.includes('withdraw')};
+      const name=c.athlete?.displayName||'';const ls=c.linescores||[];const rounds=ls.map(l=>l.value??'').slice(0,4);while(rounds.length<4)rounds.push('');
+      const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||tr);
+      const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
+      const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
+      liveScores[name]={topar:tp,today:td,thru,r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),isMC:sn.includes('cut'),isWD:sn.includes('wd')||sn.includes('withdraw')};
     });
-    renderLiveTable(competitors);renderTeamDisplay();
+    document.getElementById('live-loading').style.display='none';
+    document.getElementById('live-body').innerHTML=competitors.map((c,i)=>{
+      const name=c.athlete?.displayName||'—';const ls=c.linescores||[];const rounds=ls.map(l=>l.value??'').slice(0,4);while(rounds.length<4)rounds.push('');
+      const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||null);
+      const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||null);
+      const thru=c.status?.thru??c.status?.displayValue??'F';const pos=c.status?.position?.abbreviation||(i+1);
+      const sn=(c.status?.name||'').toLowerCase();const isMC=sn.includes('cut');const isWD=sn.includes('wd')||sn.includes('withdraw');
+      return`<tr style="animation-delay:${i*.02}s${isMC||isWD?';opacity:.5':''}"><td class="num">${pos}</td><td>${name}${isMC?'<span class="status-badge status-MC" style="margin-left:8px;font-size:.58rem">MC</span>':''}${isWD?'<span class="status-badge status-WD" style="margin-left:8px;font-size:.58rem">WD</span>':''}</td><td class="num">${toParHTML(tp!==null?tp:tr)}</td><td class="num">${toParHTML(td!==null?td:dr)}</td><td class="num">${thru}</td><td class="num hide-mobile">${rounds[0]||'—'}</td><td class="num hide-mobile">${rounds[1]||'—'}</td><td class="num hide-mobile">${rounds[2]||'—'}</td><td class="num hide-mobile">${rounds[3]||'—'}</td></tr>`;
+    }).join('');
+    document.getElementById('live-table').style.display='table';
+    renderTeamDisplay();
   }catch(e){showLiveEmpty();}
 }
 function showLiveEmpty(){document.getElementById('live-loading').style.display='none';document.getElementById('live-empty').style.display='block';}
-function renderLiveTable(competitors){
-  document.getElementById('live-loading').style.display='none';
-  if(!competitors||!competitors.length){showLiveEmpty();return;}
-  document.getElementById('live-body').innerHTML=competitors.map((c,i)=>{
-    const name=c.athlete?.displayName||'—';
-    const ls=c.linescores||[];const rounds=ls.map(l=>l.value??'').slice(0,4);while(rounds.length<4)rounds.push('');
-    const toparRaw=c.score||'';let topar=toparRaw==='E'?0:(parseInt(toparRaw)||null);
-    const todayRaw=ls.length?(ls[ls.length-1]?.value??''):'';let today=todayRaw==='E'?0:(parseInt(todayRaw)||null);
-    const thru=c.status?.thru??c.status?.displayValue??'F';
-    const pos=c.status?.position?.abbreviation||(i+1);
-    const sn=(c.status?.name||'').toLowerCase();
-    const isMC=sn.includes('cut');const isWD=sn.includes('wd')||sn.includes('withdraw');
-    return`<tr style="animation-delay:${i*.02}s${isMC||isWD?';opacity:.5':''}">
-      <td class="num">${pos}</td>
-      <td>${name}${isMC?'<span class="status-badge status-MC" style="margin-left:8px;font-size:.58rem">MC</span>':''}${isWD?'<span class="status-badge status-WD" style="margin-left:8px;font-size:.58rem">WD</span>':''}</td>
-      <td class="num">${toParHTML(topar!==null?topar:toparRaw)}</td>
-      <td class="num">${toParHTML(today!==null?today:todayRaw)}</td>
-      <td class="num">${thru}</td>
-      <td class="num hide-mobile">${rounds[0]||'—'}</td><td class="num hide-mobile">${rounds[1]||'—'}</td>
-      <td class="num hide-mobile">${rounds[2]||'—'}</td><td class="num hide-mobile">${rounds[3]||'—'}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('live-table').style.display='table';
-}
 
-// Entries / My Team
+// My Team
 async function loadEntries(){
   try{entriesData=parseCSV(await(await fetch(ENTRIES_CSV+'&t='+Date.now())).text());populateTeamSelect();}catch(e){}
 }
 function populateTeamSelect(){
   const sel=document.getElementById('team-select');
   while(sel.options.length>1)sel.remove(1);
-  entriesData.filter(r=>r['Team_Name']).forEach(r=>{const opt=document.createElement('option');opt.value=r['Team_Name'];opt.textContent=(r['Team_Name']||'—')+(r['Participant_Name']?` (${r['Participant_Name']})`:'' );sel.appendChild(opt);});
+  entriesData.filter(r=>r['Team_Name']).forEach(r=>{const o=document.createElement('option');o.value=r['Team_Name'];o.textContent=(r['Team_Name']||'—')+(r['Participant_Name']?` (${r['Participant_Name']})`:'' );sel.appendChild(o);});
   if(!sel._hasListener){sel._hasListener=true;sel.addEventListener('change',()=>{const row=entriesData.find(r=>r['Team_Name']===sel.value);if(row){document.getElementById('team-empty').style.display='none';renderTeamCard(row);}else{document.getElementById('team-display').innerHTML='';document.getElementById('team-empty').style.display='block';}});}
 }
-function playerCard(tier,name){
-  const live=getLive(name);
-  let scoreHtml='<span style="color:rgba(253,246,227,.3)">Pending</span>',detail='Awaiting tee time';
-  if(live){if(live.isMC){scoreHtml='<span class="over-par">MC</span>';detail='Missed Cut — 80 for Sat/Sun';}else if(live.isWD){scoreHtml='<span style="color:#aaa">WD</span>';detail='Withdrawn';}else{scoreHtml=toParHTML(live.topar);detail=live.thru==='F'?'Round Complete':(live.thru?`Thru hole ${live.thru}`:'Not started');}}
-  return`<div class="player-mini-card"><div class="tier-badge">${tier}</div><div class="pname">${name||'—'}</div><div class="live-score">${scoreHtml}</div><div class="live-detail">${detail}</div></div>`;
+function pCard(tier,name){
+  const live=getLive(name);let sh='<span style="color:rgba(253,246,227,.3)">Pending</span>',det='Awaiting tee time';
+  if(live){if(live.isMC){sh='<span class="over-par">MC</span>';det='Missed Cut';}else if(live.isWD){sh='<span style="color:#aaa">WD</span>';det='Withdrawn';}else{sh=toParHTML(live.topar);det=live.thru==='F'?'Round Complete':(live.thru?`Thru hole ${live.thru}`:'Not started');}}
+  return`<div class="player-mini-card"><div class="tier-badge">${tier}</div><div class="pname">${name||'—'}</div><div class="live-score">${sh}</div><div class="live-detail">${det}</div></div>`;
 }
-function renderTeamCard(entry){
-  const teamName=entry['Team_Name']||'—',owner=entry['Participant_Name']||'',status=entry['Final_Entry_Status']||'VALID',alternate=entry['Alternate']||'—';
-  const altLive=getLive(alternate);const altScore=altLive?(altLive.isMC?'MC':altLive.isWD?'WD':toParHTML(altLive.topar)):'Standby';
-  const cards=[playerCard('Tier A',entry['Tier_A']||''),playerCard('Tier B',entry['Tier_B']||''),playerCard('Tier C',entry['Tier_C']||''),playerCard('Tier D',entry['Tier_D1']||''),playerCard('Tier D',entry['Tier_D2']||'')].join('');
-  document.getElementById('team-display').innerHTML=`
-    <div class="team-card">
-      <div class="team-card-header"><h2>${teamName}</h2><div class="owner">🏌️ ${owner}</div></div>
-      <div class="team-meta">
-        <div class="team-meta-item"><div class="label">Entry Status</div><div class="value" style="font-size:.82rem">${statusBadge(status)}</div></div>
-        <div class="team-meta-item"><div class="label">Scoring</div><div class="value" style="font-size:.72rem;color:rgba(253,246,227,.45)">Best 4 of 5</div></div>
-      </div>
-      <div class="player-cards">${cards}</div>
-      <div class="alt-card">⛳ <strong>Alternate:</strong> ${alternate} &nbsp;&nbsp; ${altScore}</div>
-    </div>
-    <div class="rules-strip" style="margin-top:0"><h3>ℹ️ Scoring Note</h3><div class="rule-item">Scores shown are live to-par from Augusta. Your daily team total = best 4 of 5 strokes (highest dropped). Missed cut players receive 80 for Saturday & Sunday.</div></div>`;
+function renderTeamCard(e){
+  const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
+  const al=getLive(alt);const as=al?(al.isMC?'MC':al.isWD?'WD':toParHTML(al.topar)):'Standby';
+  const cards=[pCard('Tier A',e['Tier_A']||''),pCard('Tier B',e['Tier_B']||''),pCard('Tier C',e['Tier_C']||''),pCard('Tier D',e['Tier_D1']||''),pCard('Tier D',e['Tier_D2']||'')].join('');
+  document.getElementById('team-display').innerHTML=`<div class="team-card"><div class="team-card-header"><h2>${tn}</h2><div class="owner">🏌️ ${own}</div></div><div class="team-meta"><div class="team-meta-item"><div class="label">Entry Status</div><div class="value" style="font-size:.82rem">${statusBadge(st)}</div></div><div class="team-meta-item"><div class="label">Scoring</div><div class="value" style="font-size:.72rem;color:rgba(253,246,227,.45)">Best 4 of 5</div></div></div><div class="player-cards">${cards}</div><div class="alt-card">⛳ <strong>Alternate:</strong> ${alt} &nbsp;&nbsp; ${as}</div></div><div class="rules-strip" style="margin-top:0"><h3>ℹ️ Scoring Note</h3><div class="rule-item">Scores shown are live to-par from Augusta. Your daily team total = best 4 of 5 strokes (highest dropped). Missed cut players receive 80 for Saturday & Sunday.</div></div>`;
 }
 function renderTeamDisplay(){const sel=document.getElementById('team-select');if(!sel.value)return;const row=entriesData.find(r=>r['Team_Name']===sel.value);if(row)renderTeamCard(row);}
 
