@@ -177,15 +177,6 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 
 <!-- POOL LEADERBOARD -->
 <div class="panel active" id="panel-pool">
-  <div class="section-label">🏆 Overall Leaderboard</div>
-  <div class="board-card">
-    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
-    <table id="overall-table" style="display:none">
-      <thead><tr><th class="num">#</th><th>Team</th><th class="num hide-mobile">Thu</th><th class="num hide-mobile">Fri</th><th class="num hide-mobile">Sat</th><th class="num hide-mobile">Sun</th><th class="num">Total</th><th>Prize</th><th>Status</th></tr></thead>
-      <tbody id="overall-body"></tbody>
-    </table>
-    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
-  </div>
   <div class="section-label">📅 Daily Leaderboard</div>
   <div class="round-selector">
     <button class="round-btn active" data-round="0">Thursday</button>
@@ -200,6 +191,15 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
       <tbody id="daily-body"></tbody>
     </table>
     <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
+  </div>
+  <div class="section-label">🏆 Overall Leaderboard</div>
+  <div class="board-card">
+    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
+    <table id="overall-table" style="display:none">
+      <thead><tr><th class="num">#</th><th>Team</th><th class="num hide-mobile">Thu</th><th class="num hide-mobile">Fri</th><th class="num hide-mobile">Sat</th><th class="num hide-mobile">Sun</th><th class="num">Total</th><th>Prize</th><th>Status</th></tr></thead>
+      <tbody id="overall-body"></tbody>
+    </table>
+    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
   </div>
   <div class="rules-strip">
     <h3>📋 Quick Rules</h3>
