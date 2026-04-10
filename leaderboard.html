@@ -306,6 +306,29 @@ function fmt$(n){if(n===Math.floor(n))return'$'+n.toLocaleString();return'$'+n.t
 document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');});});
 document.querySelectorAll('.round-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.round-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDaily();});});
 
+// Auto-detect current round based on date (CST)
+function autoDetectRound(){
+  const now = new Date();
+  const cst = new Date(now.toLocaleString('en-US',{timeZone:'America/Chicago'}));
+  const month = cst.getMonth()+1;
+  const day   = cst.getDate();
+  const year  = cst.getFullYear();
+
+  let roundIdx = 0;
+  if(year===2026 && month===4){
+    if(day===9)       roundIdx=0; // Thu
+    else if(day===10) roundIdx=1; // Fri
+    else if(day===11) roundIdx=2; // Sat
+    else if(day===12) roundIdx=3; // Sun
+    else if(day>12)   roundIdx=3; // After Sun keep on Sun
+  }
+
+  document.querySelectorAll('.round-btn').forEach((b,i)=>{
+    b.classList.toggle('active', i===roundIdx);
+  });
+}
+autoDetectRound();
+
 // Tie calculator
 function calcTies(rows,prizeMap){
   const result={};let i=0;
