@@ -568,14 +568,20 @@ function pCard(tier,name){
   else if(isFinished&&!trulyFinished) thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
   else thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
 
-  // Today's score
+  // Today's score — ESPN returns raw strokes for today
+  // We convert to to-par by subtracting 72 (Augusta par)
   let todayDisplay='';
   if(live.today!==''&&live.today!==null&&live.today!==undefined){
-    const td=parseInt(live.today);
-    if(!isNaN(td)){
-      const tdStr=td<0?String(td):td>0?'+'+td:'E';
-      const tdColor=td<0?'#f0b84a':td>0?'#f08080':'rgba(253,246,227,.7)';
-      todayDisplay=`<div class="live-today">Today: <span style="color:${tdColor}">${tdStr}</span></div>`;
+    const tdRaw=parseInt(live.today);
+    if(!isNaN(tdRaw)&&tdRaw>=30){
+      // Only show if looks like a real round score (30+ holes played)
+      const tdPar=tdRaw-72;
+      const tdStr=tdPar<0?String(tdPar):tdPar>0?'+'+tdPar:'E';
+      const tdColor=tdPar<0?'#f0b84a':tdPar>0?'#f08080':'rgba(253,246,227,.7)';
+      todayDisplay=`<div class="live-today">Today: <span style="color:${tdColor}">${tdStr}</span> (${tdRaw})</div>`;
+    } else if(!isNaN(tdRaw)&&tdRaw>0&&tdRaw<30){
+      // Partial round - show hole count
+      todayDisplay=`<div class="live-today" style="color:rgba(253,246,227,.3)">In progress...</div>`;
     }
   }
 
