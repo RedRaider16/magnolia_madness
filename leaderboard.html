@@ -359,12 +359,13 @@ async function loadOverall(){
       let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
       if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
       const sd=standingsData[team]||{};
-      const thuPar=sd.thuPar!==undefined?fmtPar(sd.thuPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const friPar=sd.friPar!==undefined?fmtPar(sd.friPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const satPar=sd.satPar!==undefined?fmtPar(sd.satPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const sunPar=sd.sunPar!==undefined?fmtPar(sd.sunPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const totalPar=sd.totalPar!==undefined?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div><div class="owner-name">${v[2]||''}</div></td><td class="num hide-mobile">${scoreVal(v[3])} <small style="color:rgba(253,246,227,.4)">${thuPar}</small></td><td class="num hide-mobile">${scoreVal(v[4])} <small style="color:rgba(253,246,227,.4)">${friPar}</small></td><td class="num hide-mobile">${scoreVal(v[5])} <small style="color:rgba(253,246,227,.4)">${satPar}</small></td><td class="num hide-mobile">${scoreVal(v[6])} <small style="color:rgba(253,246,227,.4)">${sunPar}</small></td><td class="num score-total">${v[7]||'—'}</td><td class="num">${totalPar}</td><td>${ph}</td><td>${statusBadge(v[8])}</td></tr>`;
+      const thuPar=sd.thuPar!==undefined&&sd.thuRaw?fmtPar(sd.thuPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const friPar=sd.friPar!==undefined&&sd.friRaw?fmtPar(sd.friPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const satPar=sd.satPar!==undefined&&sd.satRaw?fmtPar(sd.satPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const sunPar=sd.sunPar!==undefined&&sd.sunRaw?fmtPar(sd.sunPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const totalPar=sd.totalPar!==undefined&&sd.rounds>0?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const status=v[8]||'ACTIVE';
+      return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div><div class="owner-name">${v[2]||''}</div></td><td class="num">${scoreVal(v[3])}<br><small>${thuPar}</small></td><td class="num hide-mobile">${scoreVal(v[4])}<br><small>${friPar}</small></td><td class="num hide-mobile">${scoreVal(v[5])}<br><small>${satPar}</small></td><td class="num hide-mobile">${scoreVal(v[6])}<br><small>${sunPar}</small></td><td class="num score-total">${v[7]||'—'}</td><td class="num">${totalPar}</td><td>${ph}</td><td>${statusBadge(status)}</td></tr>`;
     }).join('');
     document.getElementById('overall-table').style.display='table';
     // Update banner + payout tab overall
@@ -437,7 +438,8 @@ function renderDaily(){
     let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
     if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
     const scoreDisplay=t.score?t.score:'<span style="color:rgba(253,246,227,.22)">—</span>';
-    const parDisplay=fmtPar(t.par);
+    // Only show to-par if score looks like a complete round (4 players × ~70 = ~280 minimum)
+    const parDisplay=(t.score&&t.score>=200)?fmtPar(t.par):'<span style="color:rgba(253,246,227,.22)">—</span>';
     return`<tr style="animation-delay:${i*.04}s">${rankCell(i+1,i)}<td><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${ph}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
