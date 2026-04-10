@@ -551,10 +551,21 @@ function pCard(tier,name){
   const isFinished=thru==='F';
   const roundBadge=isFinished?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
 
-  // Thru display
+  // Thru display — only mark complete if R2 score is in valid range (65-90)
+  const hasValidR2 = live.r2 && parseInt(live.r2) >= 65 && parseInt(live.r2) <= 90;
+  const hasValidR1 = live.r1 && parseInt(live.r1) >= 65 && parseInt(live.r1) <= 90;
+  const roundsPlayed = (hasValidR1?1:0) + (hasValidR2?1:0);
+  // Determine current round
+  const currentRoundNum = hasValidR2 ? 2 : hasValidR1 ? 1 : 0;
+  const trulyFinished = isFinished && (
+    (currentRoundNum===1 && hasValidR1) ||
+    (currentRoundNum===2 && hasValidR2) ||
+    currentRoundNum===0
+  );
   let thruDisplay='';
-  if(isFinished) thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
+  if(trulyFinished) thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
   else if(thru&&thru!=='F') thruDisplay=`<div class="live-thru" style="color:var(--gold)">🔴 Hole ${thru}</div>`;
+  else if(isFinished&&!trulyFinished) thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
   else thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
 
   // Today's score
