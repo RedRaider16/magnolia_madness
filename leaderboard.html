@@ -388,41 +388,67 @@ async function loadOverall(){
 
 // Daily
 async function loadDaily(){
-  try{dailyData=parseCSV(await(await fetch(DAILY_CSV+'&t='+Date.now())).text(),2);renderDaily();}
-  catch(e){document.getElementById('daily-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load</span>';}
+  // Daily data now comes from Team_Standings which has all rounds
+  // We use standingsData which is loaded by loadStandings()
+  renderDaily();
 }
 function renderDaily(){
   document.getElementById('daily-loading').style.display='none';
   document.getElementById('daily-empty').style.display='none';
   document.getElementById('daily-table').style.display='none';
-  if(!dailyData.length){document.getElementById('daily-empty').style.display='block';return;}
-  const sortedDaily=dailyData.map((r,i)=>{const v=Object.values(r);return{team:v[1]||'',score:parseFloat(v[3])||9999};}).filter(r=>r.team&&r.score!==9999);
-  const dailyPrizes=calcTies(sortedDaily,{1:100});
-  document.getElementById('daily-body').innerHTML=dailyData.map((r,i)=>{
-    const v=Object.values(r);const team=v[1]||'—';
-    const pi=dailyPrizes[team];
+
+  const activeBtn=document.querySelector('.round-btn.active');
+  const rIdx=activeBtn?parseInt(activeBtn.dataset.round):0;
+  const rawKeys=['thuRaw','friRaw','satRaw','sunRaw'];
+  const parKeys=['thuPar','friPar','satPar','sunPar'];
+  const roundKeys=['thu','fri','sat','sun'];
+  const roundKey=roundKeys[rIdx]||'thu';
+
+  // Build sorted rows from standingsData
+  const teams=Object.entries(standingsData).map(([team,sd])=>({
+    team,
+    owner:'', // owner not in standings, will look up from overallData
+    score:parseFloat(sd[rawKeys[rIdx]])||null,
+    par:sd[parKeys[rIdx]],
+    status:sd.status||'ACTIVE'
+  })).filter(r=>r.team&&r.score!==null&&!isNaN(r.score)&&r.score>0);
+
+  // Add owner names from overallData
+  teams.forEach(t=>{
+    const od=overallData.find(r=>Object.values(r)[0]===t.team||Object.values(r)[1]===t.team);
+    if(od){const v=Object.values(od);t.owner=v[2]||'';}
+  });
+
+  // Sort by score ascending
+  teams.sort((a,b)=>a.score-b.score);
+
+  if(!teams.length){
+    document.getElementById('daily-empty').style.display='block';
+    // Reset banner for this round
+    document.getElementById(`b-${roundKey}-leader`).textContent='—';
+    document.getElementById(`b-${roundKey}-tie`).textContent='';
+    return;
+  }
+
+  const dailyPrizes=calcTies(teams.map((t,i)=>({team:t.team,score:t.score})),{1:100});
+
+  document.getElementById('daily-body').innerHTML=teams.map((t,i)=>{
+    const pi=dailyPrizes[t.team];
     let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
     if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
-    const activeBtn=document.querySelector('.round-btn.active');
-    const rIdx=activeBtn?parseInt(activeBtn.dataset.round):0;
-    const parKeys=['thuPar','friPar','satPar','sunPar'];
-    const sd2=standingsData[team]||{};
-    const dailyPar=sd2[parKeys[rIdx]]!==undefined?fmtPar(sd2[parKeys[rIdx]]):'<span style="color:rgba(253,246,227,.2)">—</span>';
-    const rawScore=v[3]||'';
-    const scoreDisplay=(!rawScore||rawScore===''||rawScore==='0'||isNaN(parseFloat(rawScore))||rawScore==='ACTIVE')?'<span style="color:rgba(253,246,227,.22)">—</span>':rawScore;
-    const parDisplay=(!rawScore||rawScore===''||rawScore==='0'||isNaN(parseFloat(rawScore))||rawScore==='ACTIVE')?'<span style="color:rgba(253,246,227,.22)">—</span>':dailyPar;
-    return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${v[2]||''}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${ph}</td><td>${statusBadge(v[4])}</td></tr>`;
+    const scoreDisplay=t.score?t.score:'<span style="color:rgba(253,246,227,.22)">—</span>';
+    const parDisplay=fmtPar(t.par);
+    return`<tr style="animation-delay:${i*.04}s">${rankCell(i+1,i)}<td><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${ph}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
-  // Update banner + payout tab for active round
-  const activeBtn=document.querySelector('.round-btn.active');
-  const roundIdx=activeBtn?parseInt(activeBtn.dataset.round):0;
-  const roundKey=['thu','fri','sat'][roundIdx]||'thu';
-  const leader=sortedDaily.length>0?sortedDaily[0]:null;
+
+  // Update banner and payouts tab
+  const leader=teams[0];
   const pi=leader?dailyPrizes[leader.team]:null;
   const amt=pi?pi.prize:100;
   const name=leader?leader.team:'—';
   const isTie=pi?pi.isTie:false;
+
   document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
   document.getElementById(`b-${roundKey}-leader`).textContent=name;
   document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
@@ -550,7 +576,7 @@ function fmtPar(val){
   return'<span class="topar-cell even-par">E</span>';
 }
 
-async function refresh(){await Promise.all([loadOverall(),loadDaily(),loadLive(),loadEntries(),loadStandings()]);updateTimestamp();}
+async function refresh(){await Promise.all([loadOverall(),loadLive(),loadEntries(),loadStandings()]);renderDaily();updateTimestamp();}
 refresh();
 setInterval(refresh,90000);
 </script>
