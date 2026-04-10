@@ -359,11 +359,11 @@ async function loadOverall(){
       let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
       if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
       const sd=standingsData[team]||{};
-      const thuPar=sd.thuPar!==undefined&&sd.thuRaw?fmtPar(sd.thuPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const friPar=sd.friPar!==undefined&&sd.friRaw?fmtPar(sd.friPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const satPar=sd.satPar!==undefined&&sd.satRaw?fmtPar(sd.satPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const sunPar=sd.sunPar!==undefined&&sd.sunRaw?fmtPar(sd.sunPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
-      const totalPar=sd.totalPar!==undefined&&sd.rounds>0?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const thuPar=sd.thuPar!==null&&sd.thuPar!==undefined?fmtPar(sd.thuPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const friPar=sd.friPar!==null&&sd.friPar!==undefined?fmtPar(sd.friPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const satPar=sd.satPar!==null&&sd.satPar!==undefined?fmtPar(sd.satPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const sunPar=sd.sunPar!==null&&sd.sunPar!==undefined?fmtPar(sd.sunPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
+      const totalPar=sd.totalPar!==null&&sd.totalPar!==undefined?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.2)">—</span>';
       const status=v[8]||'ACTIVE';
       return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div><div class="owner-name">${v[2]||''}</div></td><td class="num">${scoreVal(v[3])}<br><small>${thuPar}</small></td><td class="num hide-mobile">${scoreVal(v[4])}<br><small>${friPar}</small></td><td class="num hide-mobile">${scoreVal(v[5])}<br><small>${satPar}</small></td><td class="num hide-mobile">${scoreVal(v[6])}<br><small>${sunPar}</small></td><td class="num score-total">${v[7]||'—'}</td><td class="num">${totalPar}</td><td>${ph}</td><td>${statusBadge(status)}</td></tr>`;
     }).join('');
@@ -439,7 +439,7 @@ function renderDaily(){
     if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
     const scoreDisplay=t.score?t.score:'<span style="color:rgba(253,246,227,.22)">—</span>';
     // Only show to-par if score looks like a complete round (4 players × ~70 = ~280 minimum)
-    const parDisplay=(t.score&&t.score>=200)?fmtPar(t.par):'<span style="color:rgba(253,246,227,.22)">—</span>';
+    const parDisplay=(t.par!==null&&t.par!==undefined)?fmtPar(t.par):'<span style="color:rgba(253,246,227,.22)">—</span>';
     return`<tr style="animation-delay:${i*.04}s">${rankCell(i+1,i)}<td><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${ph}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
@@ -529,14 +529,28 @@ async function loadStandings(){
     standingsData={};
     rows.forEach(r=>{
       if(r['Team_Name']){
+        // A complete round score for best-4-of-5 should be >= 200 (4 x ~50 minimum)
+        // If below 200 the round is in progress - don't show to-par
+        const thuRaw=parseFloat(r['Thu_Raw'])||0;
+        const friRaw=parseFloat(r['Fri_Raw'])||0;
+        const satRaw=parseFloat(r['Sat_Raw'])||0;
+        const sunRaw=parseFloat(r['Sun_Raw'])||0;
+        const thuComplete=thuRaw>=200;
+        const friComplete=friRaw>=200;
+        const satComplete=satRaw>=200;
+        const sunComplete=sunRaw>=200;
+        const completedRounds=[thuComplete,friComplete,satComplete,sunComplete].filter(Boolean).length;
+        const totalRaw=parseFloat(r['Total_Raw'])||0;
+        const totalPar=completedRounds>0?(totalRaw-(288*completedRounds)):null;
         standingsData[r['Team_Name']]={
-          thuRaw:r['Thu_Raw'],thuPar:r['Thu_ToPar'],
-          friRaw:r['Fri_Raw'],friPar:r['Fri_ToPar'],
-          satRaw:r['Sat_Raw'],satPar:r['Sat_ToPar'],
-          sunRaw:r['Sun_Raw'],sunPar:r['Sun_ToPar'],
-          totalRaw:r['Total_Raw'],totalPar:r['Total_ToPar'],
-          rounds:parseInt(r['Rounds_Complete'])||0,
-          roundStatus:r['Round_Status']||'Not Started'
+          thuRaw:thuRaw||'',thuPar:thuComplete?parseFloat(r['Thu_ToPar']):null,
+          friRaw:friRaw||'',friPar:friComplete?parseFloat(r['Fri_ToPar']):null,
+          satRaw:satRaw||'',satPar:satComplete?parseFloat(r['Sat_ToPar']):null,
+          sunRaw:sunRaw||'',sunPar:sunComplete?parseFloat(r['Sun_ToPar']):null,
+          totalRaw:totalRaw||'',totalPar:totalPar,
+          rounds:completedRounds,
+          roundStatus:r['Round_Status']||'Not Started',
+          status:r['Status']||'ACTIVE'
         };
       }
     });
