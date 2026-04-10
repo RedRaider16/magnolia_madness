@@ -480,14 +480,29 @@ async function loadLive(){
       const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
       const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
       // Get current round index from number of completed rounds
-      const completedRounds=rounds.filter(r=>r>=65&&r<=90).length;
+      // Get ESPN's own per-round to-par from linescores
+      // linescores array has value=raw score and displayValue=to-par for each round
+      const roundScores=ls.map(l=>({
+        raw:l.value??'',
+        topar:l.displayValue??''
+      })).slice(0,4);
+      while(roundScores.length<4) roundScores.push({raw:'',topar:''});
+
       liveScores[name]={
-        topar:tp,today:td,thru,
-        r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],
+        topar:tp,           // tournament to-par from ESPN
+        today:td,           // today's raw score
+        thru,
+        // Raw round scores
+        r1:roundScores[0].raw, r2:roundScores[1].raw,
+        r3:roundScores[2].raw, r4:roundScores[3].raw,
+        // ESPN's own to-par per round
+        r1par:roundScores[0].topar, r2par:roundScores[1].topar,
+        r3par:roundScores[2].topar, r4par:roundScores[3].topar,
         pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),
         isMC:sn.includes('cut'),
         isWD:sn.includes('wd')||sn.includes('withdraw'),
-        completedRounds
+        period:c.status?.period||1,        // current round number
+        finished:c.status?.type?.completed||false
       };
     });
     document.getElementById('live-loading').style.display='none';
@@ -517,6 +532,7 @@ function populateTeamSelect(){
 }
 function pCard(tier,name){
   const live=getLive(name);
+
   if(!live){
     return`<div class="player-mini-card">
       <div class="tier-badge">${tier}</div>
@@ -526,19 +542,23 @@ function pCard(tier,name){
     </div>`;
   }
 
-  // Status
+  // ── MISSED CUT ──
   if(live.isMC){
-    return`<div class="player-mini-card" style="border-color:rgba(176,48,48,.3)">
+    const r1str=live.r1par?`R1: ${live.r1par} (${live.r1})`:'';
+    const r2str=live.r2par?` · R2: ${live.r2par} (${live.r2})`:'';
+    return`<div class="player-mini-card" style="border-color:rgba(176,48,48,.3);opacity:.7">
       <div class="tier-badge">${tier}</div>
       <div class="pname">${name||'—'}</div>
-      <div class="live-score"><span class="over-par">MC</span></div>
-      <div class="live-detail">Missed Cut</div>
-      <div class="live-rounds">${live.r1?'R1: '+live.r1:''}${live.r2?' · R2: '+live.r2:''}</div>
+      <div class="live-score"><span class="over-par">${live.topar!==null&&!isNaN(live.topar)?toParHTML(live.topar):'MC'}</span></div>
+      <div class="live-rounds">${r1str}${r2str}</div>
       <span class="cut-warning cut-danger">❌ Missed Cut</span>
+      <div class="live-detail" style="margin-top:4px">80 applied Sat & Sun</div>
     </div>`;
   }
+
+  // ── WITHDRAWN ──
   if(live.isWD){
-    return`<div class="player-mini-card" style="border-color:rgba(100,100,100,.3)">
+    return`<div class="player-mini-card" style="border-color:rgba(100,100,100,.3);opacity:.6">
       <div class="tier-badge">${tier}</div>
       <div class="pname">${name||'—'}</div>
       <div class="live-score"><span style="color:#aaa">WD</span></div>
@@ -546,77 +566,89 @@ function pCard(tier,name){
     </div>`;
   }
 
-  // Normal active player
+  // ── ACTIVE PLAYER ──
   const topar=live.topar;
   const thru=live.thru;
-  const isFinished=thru==='F';
-  const roundBadge=isFinished?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
+  const period=live.period||1; // current round (1=Thu,2=Fri,3=Sat,4=Sun)
 
-  // Thru display — only mark complete if R2 score is in valid range (65-90)
-  const hasValidR2 = live.r2 && parseInt(live.r2) >= 65 && parseInt(live.r2) <= 90;
-  const hasValidR1 = live.r1 && parseInt(live.r1) >= 65 && parseInt(live.r1) <= 90;
-  const roundsPlayed = (hasValidR1?1:0) + (hasValidR2?1:0);
-  // Determine current round
-  const currentRoundNum = hasValidR2 ? 2 : hasValidR1 ? 1 : 0;
-  const trulyFinished = isFinished && (
-    (currentRoundNum===1 && hasValidR1) ||
-    (currentRoundNum===2 && hasValidR2) ||
-    currentRoundNum===0
-  );
+  // Determine which rounds are truly complete using ESPN topar data
+  const r1done=live.r1par!==''&&live.r1par!==undefined&&live.r1par!==null;
+  const r2done=live.r2par!==''&&live.r2par!==undefined&&live.r2par!==null;
+  const r3done=live.r3par!==''&&live.r3par!==undefined&&live.r3par!==null;
+  const r4done=live.r4par!==''&&live.r4par!==undefined&&live.r4par!==null;
+
+  // Current round in progress
+  const currentRound=r4done?5:r3done?4:r2done?3:r1done?2:1;
+  const isPlaying=!live.finished&&thru!==undefined;
+
+  // Round complete badge
+  const allDone=live.finished&&!isPlaying;
+  const roundBadge=allDone?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
+
+  // Thru display
   let thruDisplay='';
-  if(trulyFinished) thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
-  else if(thru&&thru!=='F') thruDisplay=`<div class="live-thru" style="color:var(--gold)">🔴 Hole ${thru}</div>`;
-  else if(isFinished&&!trulyFinished) thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
-  else thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
-
-  // Today's to-par — calculate from completed round scores
-  // R1 to-par = r1 - 72, R2 to-par = r2 - 72
-  let todayDisplay='';
-  const r1Num=parseInt(live.r1)||0;
-  const r2Num=parseInt(live.r2)||0;
-  const r3Num=parseInt(live.r3)||0;
-  const r4Num=parseInt(live.r4)||0;
-  const r1Valid=r1Num>=65&&r1Num<=90;
-  const r2Valid=r2Num>=65&&r2Num<=90;
-  const r3Valid=r3Num>=65&&r3Num<=90;
-  const r4Valid=r4Num>=65&&r4Num<=90;
-
-  // Show most recent completed round to-par
-  let latestRoundPar=null;
-  let latestRoundLabel='';
-  if(r4Valid){latestRoundPar=r4Num-72;latestRoundLabel='R4';}
-  else if(r3Valid){latestRoundPar=r3Num-72;latestRoundLabel='R3';}
-  else if(r2Valid){latestRoundPar=r2Num-72;latestRoundLabel='R2';}
-  else if(r1Valid){latestRoundPar=r1Num-72;latestRoundLabel='R1';}
-
-  if(latestRoundPar!==null){
-    const parStr=latestRoundPar<0?String(latestRoundPar):latestRoundPar>0?'+'+latestRoundPar:'E';
-    const parColor=latestRoundPar<0?'#f0b84a':latestRoundPar>0?'#f08080':'rgba(253,246,227,.7)';
-    todayDisplay=`<div class="live-today">${latestRoundLabel}: <span style="color:${parColor}">${parStr}</span></div>`;
-  } else if(!trulyFinished){
-    todayDisplay='<div class="live-today" style="color:rgba(253,246,227,.3)">Round in progress</div>';
+  if(live.finished){
+    thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
+  } else if(thru&&thru!=='F'&&!isNaN(parseInt(thru))){
+    thruDisplay=`<div class="live-thru" style="color:var(--gold)">🔴 Hole ${thru} of 18</div>`;
+  } else if(thru==='F'&&!live.finished){
+    thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
+  } else {
+    thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
   }
 
-  // Round history
-  const r1=live.r1,r2=live.r2,r3=live.r3,r4=live.r4;
-  let roundHistory='';
-  const parts=[];
-  if(r1&&r1>=65) parts.push('R1: '+r1);
-  if(r2&&r2>=65) parts.push('R2: '+r2);
-  if(r3&&r3>=65) parts.push('R3: '+r3);
-  if(r4&&r4>=65) parts.push('R4: '+r4);
-  if(parts.length>0) roundHistory=`<div class="live-rounds">${parts.join(' · ')}</div>`;
-
-  // Cut line indicator — Augusta cut typically around +3 to +6 after R2
-  let cutBadge='';
-  const toparNum=parseInt(topar);
-  if(!isNaN(toparNum)&&(live.r1||live.r2)){
-    // Only show cut indicator during/after R2
-    if(live.r2||live.r1){
-      if(toparNum<=-2) cutBadge='<span class="cut-warning cut-safe">✓ Safe</span>';
-      else if(toparNum<=2) cutBadge='<span class="cut-warning cut-warning-amber">⚠️ Near Cut</span>';
-      else if(toparNum>2) cutBadge='<span class="cut-warning cut-danger">⚠️ Cut Risk</span>';
+  // Today's live round progress (ESPN to-par for current round)
+  let todayDisplay='';
+  if(isPlaying||(!live.finished)){
+    // Calculate today's to-par = total topar minus all completed previous rounds
+    const prevPar=(r1done?parseFloat(live.r1par)||0:0)+
+                  (r2done?parseFloat(live.r2par)||0:0)+
+                  (r3done?parseFloat(live.r3par)||0:0);
+    const todayPar=parseFloat(live.topar)-prevPar;
+    if(!isNaN(todayPar)){
+      const pStr=todayPar<0?String(todayPar):todayPar>0?'+'+todayPar:'E';
+      const pCol=todayPar<0?'#f0b84a':todayPar>0?'#f08080':'rgba(253,246,227,.7)';
+      const thruStr=thru&&thru!=='F'&&!isNaN(parseInt(thru))?` thru ${thru}`:'';
+      todayDisplay=`<div class="live-today">🔴 R${currentRound-1}: <span style="color:${pCol}">${pStr}</span>${thruStr}</div>`;
     }
+  }
+
+  // Completed round history using ESPN's own to-par values
+  const histParts=[];
+  if(r1done){
+    const p=parseFloat(live.r1par);
+    const pStr=p<0?String(p):p>0?'+'+p:'E';
+    const raw=live.r1?` (${live.r1})`:'';
+    histParts.push(`R1: ${pStr}${raw}`);
+  }
+  if(r2done){
+    const p=parseFloat(live.r2par);
+    const pStr=p<0?String(p):p>0?'+'+p:'E';
+    const raw=live.r2?` (${live.r2})`:'';
+    histParts.push(`R2: ${pStr}${raw}`);
+  }
+  if(r3done){
+    const p=parseFloat(live.r3par);
+    const pStr=p<0?String(p):p>0?'+'+p:'E';
+    const raw=live.r3?` (${live.r3})`:'';
+    histParts.push(`R3: ${pStr}${raw}`);
+  }
+  if(r4done){
+    const p=parseFloat(live.r4par);
+    const pStr=p<0?String(p):p>0?'+'+p:'E';
+    const raw=live.r4?` (${live.r4})`:'';
+    histParts.push(`R4: ${pStr}${raw}`);
+  }
+  const roundHistory=histParts.length>0?`<div class="live-rounds">${histParts.join(' · ')}</div>`:'';
+
+  // Cut line indicator — Augusta cut typically top 50 + ties
+  // Use tournament to-par as proxy: <= +3 is generally safe after R2
+  let cutBadge='';
+  const toparNum=parseFloat(live.topar);
+  if(!isNaN(toparNum)&&(r1done||r2done)){
+    if(toparNum<=-2)       cutBadge='<span class="cut-warning cut-safe">✓ Safe</span>';
+    else if(toparNum<=3)   cutBadge='<span class="cut-warning cut-warning-amber">⚠️ Near Cut</span>';
+    else                   cutBadge='<span class="cut-warning cut-danger">⚠️ Cut Risk</span>';
   }
 
   return`<div class="player-mini-card">
@@ -629,6 +661,8 @@ function pCard(tier,name){
     ${cutBadge}
   </div>`;
 }
+
+
 function renderTeamCard(e){
   const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
   const al=getLive(alt);const as=al?(al.isMC?'MC':al.isWD?'WD':toParHTML(al.topar)):'Standby';
