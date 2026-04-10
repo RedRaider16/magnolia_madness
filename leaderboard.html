@@ -112,6 +112,13 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 .pname{font-weight:600;font-size:.85rem;line-height:1.3;margin-bottom:7px}
 .live-score{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;line-height:1}
 .live-detail{font-size:.68rem;color:rgba(253,246,227,.38);margin-top:4px}
+.live-today{font-size:.75rem;color:rgba(253,246,227,.55);margin-top:5px;font-family:'DM Mono',monospace;}
+.live-rounds{font-size:.68rem;color:rgba(253,246,227,.3);margin-top:3px;}
+.live-thru{font-size:.7rem;margin-top:3px;}
+.cut-warning{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:100px;margin-top:6px;display:inline-block;}
+.cut-safe{background:rgba(45,125,79,.2);color:#7dd9a0;border:1px solid rgba(45,125,79,.35);}
+.cut-danger{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.35);animation:pulse 2s ease-in-out infinite;}
+.cut-warning-amber{background:rgba(196,122,26,.2);color:#f0b84a;border:1px solid rgba(196,122,26,.35);}
 .alt-card{background:rgba(255,255,255,.02);border:1px dashed rgba(201,168,76,.18);border-radius:9px;padding:11px 16px;margin:0 22px 18px;font-size:.8rem;color:rgba(253,246,227,.45)}
 .alt-card strong{color:rgba(253,246,227,.65)}
 .rules-strip{background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:18px 22px;margin-top:6px;backdrop-filter:blur(12px)}
@@ -472,7 +479,15 @@ async function loadLive(){
       const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||tr);
       const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
       const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
-      liveScores[name]={topar:tp,today:td,thru,r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),isMC:sn.includes('cut'),isWD:sn.includes('wd')||sn.includes('withdraw')};
+      const todayTopar=td;
+      liveScores[name]={
+        topar:tp,today:td,thru,
+        r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],
+        pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),
+        isMC:sn.includes('cut'),
+        isWD:sn.includes('wd')||sn.includes('withdraw'),
+        cutLine:null // populated below
+      };
     });
     document.getElementById('live-loading').style.display='none';
     document.getElementById('live-body').innerHTML=competitors.map((c,i)=>{
@@ -500,18 +515,90 @@ function populateTeamSelect(){
   if(!sel._hasListener){sel._hasListener=true;sel.addEventListener('change',()=>{const row=entriesData.find(r=>r['Team_Name']===sel.value);if(row){document.getElementById('team-empty').style.display='none';renderTeamCard(row);}else{document.getElementById('team-display').innerHTML='';document.getElementById('team-empty').style.display='block';}});}
 }
 function pCard(tier,name){
-  const live=getLive(name);let sh='<span style="color:rgba(253,246,227,.3)">Pending</span>',det='Awaiting tee time',roundBadge='';
-  if(live){
-    if(live.isMC){sh='<span class="over-par">MC</span>';det='Missed Cut — 80 for Sat/Sun';}
-    else if(live.isWD){sh='<span style="color:#aaa">WD</span>';det='Withdrawn';}
-    else{
-      sh=toParHTML(live.topar);
-      if(live.thru==='F'){det='Round Complete';roundBadge='<span style="font-size:.6rem;color:#7dd9a0;margin-left:6px">✓ F</span>';}
-      else if(live.thru&&live.thru!=='F'){det=`Thru ${live.thru}`;}
-      else{det='Not started';}
+  const live=getLive(name);
+  if(!live){
+    return`<div class="player-mini-card">
+      <div class="tier-badge">${tier}</div>
+      <div class="pname">${name||'—'}</div>
+      <div class="live-score"><span style="color:rgba(253,246,227,.3)">Pending</span></div>
+      <div class="live-detail">Awaiting tee time</div>
+    </div>`;
+  }
+
+  // Status
+  if(live.isMC){
+    return`<div class="player-mini-card" style="border-color:rgba(176,48,48,.3)">
+      <div class="tier-badge">${tier}</div>
+      <div class="pname">${name||'—'}</div>
+      <div class="live-score"><span class="over-par">MC</span></div>
+      <div class="live-detail">Missed Cut</div>
+      <div class="live-rounds">${live.r1?'R1: '+live.r1:''}${live.r2?' · R2: '+live.r2:''}</div>
+      <span class="cut-warning cut-danger">❌ Missed Cut</span>
+    </div>`;
+  }
+  if(live.isWD){
+    return`<div class="player-mini-card" style="border-color:rgba(100,100,100,.3)">
+      <div class="tier-badge">${tier}</div>
+      <div class="pname">${name||'—'}</div>
+      <div class="live-score"><span style="color:#aaa">WD</span></div>
+      <div class="live-detail">Withdrawn</div>
+    </div>`;
+  }
+
+  // Normal active player
+  const topar=live.topar;
+  const thru=live.thru;
+  const isFinished=thru==='F';
+  const roundBadge=isFinished?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
+
+  // Thru display
+  let thruDisplay='';
+  if(isFinished) thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
+  else if(thru&&thru!=='F') thruDisplay=`<div class="live-thru" style="color:var(--gold)">🔴 Hole ${thru}</div>`;
+  else thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
+
+  // Today's score
+  let todayDisplay='';
+  if(live.today!==''&&live.today!==null&&live.today!==undefined){
+    const td=parseInt(live.today);
+    if(!isNaN(td)){
+      const tdStr=td<0?String(td):td>0?'+'+td:'E';
+      const tdColor=td<0?'#f0b84a':td>0?'#f08080':'rgba(253,246,227,.7)';
+      todayDisplay=`<div class="live-today">Today: <span style="color:${tdColor}">${tdStr}</span></div>`;
     }
   }
-  return`<div class="player-mini-card"><div class="tier-badge">${tier}</div><div class="pname">${name||'—'}${roundBadge}</div><div class="live-score">${sh}</div><div class="live-detail">${det}</div></div>`;
+
+  // Round history
+  const r1=live.r1,r2=live.r2,r3=live.r3,r4=live.r4;
+  let roundHistory='';
+  const parts=[];
+  if(r1&&r1>=65) parts.push('R1: '+r1);
+  if(r2&&r2>=65) parts.push('R2: '+r2);
+  if(r3&&r3>=65) parts.push('R3: '+r3);
+  if(r4&&r4>=65) parts.push('R4: '+r4);
+  if(parts.length>0) roundHistory=`<div class="live-rounds">${parts.join(' · ')}</div>`;
+
+  // Cut line indicator — Augusta cut typically around +3 to +6 after R2
+  let cutBadge='';
+  const toparNum=parseInt(topar);
+  if(!isNaN(toparNum)&&(live.r1||live.r2)){
+    // Only show cut indicator during/after R2
+    if(live.r2||live.r1){
+      if(toparNum<=-2) cutBadge='<span class="cut-warning cut-safe">✓ Safe</span>';
+      else if(toparNum<=2) cutBadge='<span class="cut-warning cut-warning-amber">⚠️ Near Cut</span>';
+      else if(toparNum>2) cutBadge='<span class="cut-warning cut-danger">⚠️ Cut Risk</span>';
+    }
+  }
+
+  return`<div class="player-mini-card">
+    <div class="tier-badge">${tier}</div>
+    <div class="pname">${name||'—'}${roundBadge}</div>
+    <div class="live-score">${toParHTML(topar)}</div>
+    ${todayDisplay}
+    ${thruDisplay}
+    ${roundHistory}
+    ${cutBadge}
+  </div>`;
 }
 function renderTeamCard(e){
   const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
