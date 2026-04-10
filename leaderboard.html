@@ -479,14 +479,15 @@ async function loadLive(){
       const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||tr);
       const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
       const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
-      const todayTopar=td;
+      // Get current round index from number of completed rounds
+      const completedRounds=rounds.filter(r=>r>=65&&r<=90).length;
       liveScores[name]={
         topar:tp,today:td,thru,
         r1:rounds[0],r2:rounds[1],r3:rounds[2],r4:rounds[3],
         pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),
         isMC:sn.includes('cut'),
         isWD:sn.includes('wd')||sn.includes('withdraw'),
-        cutLine:null // populated below
+        completedRounds
       };
     });
     document.getElementById('live-loading').style.display='none';
@@ -568,21 +569,32 @@ function pCard(tier,name){
   else if(isFinished&&!trulyFinished) thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
   else thruDisplay='<div class="live-thru" style="color:rgba(253,246,227,.3)">Not started</div>';
 
-  // Today's score — ESPN returns raw strokes for today
-  // We convert to to-par by subtracting 72 (Augusta par)
+  // Today's to-par — calculate from completed round scores
+  // R1 to-par = r1 - 72, R2 to-par = r2 - 72
   let todayDisplay='';
-  if(live.today!==''&&live.today!==null&&live.today!==undefined){
-    const tdRaw=parseInt(live.today);
-    if(!isNaN(tdRaw)&&tdRaw>=30){
-      // Only show if looks like a real round score (30+ holes played)
-      const tdPar=tdRaw-72;
-      const tdStr=tdPar<0?String(tdPar):tdPar>0?'+'+tdPar:'E';
-      const tdColor=tdPar<0?'#f0b84a':tdPar>0?'#f08080':'rgba(253,246,227,.7)';
-      todayDisplay=`<div class="live-today">Today: <span style="color:${tdColor}">${tdStr}</span> (${tdRaw})</div>`;
-    } else if(!isNaN(tdRaw)&&tdRaw>0&&tdRaw<30){
-      // Partial round - show hole count
-      todayDisplay=`<div class="live-today" style="color:rgba(253,246,227,.3)">In progress...</div>`;
-    }
+  const r1Num=parseInt(live.r1)||0;
+  const r2Num=parseInt(live.r2)||0;
+  const r3Num=parseInt(live.r3)||0;
+  const r4Num=parseInt(live.r4)||0;
+  const r1Valid=r1Num>=65&&r1Num<=90;
+  const r2Valid=r2Num>=65&&r2Num<=90;
+  const r3Valid=r3Num>=65&&r3Num<=90;
+  const r4Valid=r4Num>=65&&r4Num<=90;
+
+  // Show most recent completed round to-par
+  let latestRoundPar=null;
+  let latestRoundLabel='';
+  if(r4Valid){latestRoundPar=r4Num-72;latestRoundLabel='R4';}
+  else if(r3Valid){latestRoundPar=r3Num-72;latestRoundLabel='R3';}
+  else if(r2Valid){latestRoundPar=r2Num-72;latestRoundLabel='R2';}
+  else if(r1Valid){latestRoundPar=r1Num-72;latestRoundLabel='R1';}
+
+  if(latestRoundPar!==null){
+    const parStr=latestRoundPar<0?String(latestRoundPar):latestRoundPar>0?'+'+latestRoundPar:'E';
+    const parColor=latestRoundPar<0?'#f0b84a':latestRoundPar>0?'#f08080':'rgba(253,246,227,.7)';
+    todayDisplay=`<div class="live-today">${latestRoundLabel}: <span style="color:${parColor}">${parStr}</span></div>`;
+  } else if(!trulyFinished){
+    todayDisplay='<div class="live-today" style="color:rgba(253,246,227,.3)">Round in progress</div>';
   }
 
   // Round history
