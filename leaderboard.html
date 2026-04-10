@@ -119,11 +119,6 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 .rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px 22px}
 .rule-item{font-size:.76rem;color:rgba(253,246,227,.45);line-height:1.5;padding-left:11px;border-left:2px solid rgba(201,168,76,.2)}
 .rule-item strong{color:rgba(253,246,227,.7)}
-.round-status-bar{display:flex;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.round-status-pill{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border-radius:100px;border:1px solid rgba(201,168,76,.2);color:rgba(253,246,227,.4);background:rgba(3,12,6,.5);}
-.round-status-pill.complete{background:rgba(45,125,79,.2);color:#7dd9a0;border-color:rgba(45,125,79,.4);}
-.round-status-pill.inprogress{background:rgba(201,168,76,.15);color:var(--gold-light);border-color:rgba(201,168,76,.4);animation:pulse 2s ease-in-out infinite;}
-.round-status-pill.upcoming{color:rgba(253,246,227,.25);border-color:rgba(255,255,255,.08);}
 .topar-cell{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;}
 .photo-credit{position:fixed;bottom:10px;right:14px;font-size:.6rem;color:rgba(255,255,255,.18);z-index:20;}
 @media(max-width:640px){
@@ -176,13 +171,6 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
       <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize" id="b-sat-prize">$100</div><div class="slot-leader" id="b-sat-leader">—</div><div class="slot-tie" id="b-sat-tie"></div></div>
     </div>
   </div>
-</div>
-
-<div class="round-status-bar" id="round-status-bar">
-  <div class="round-status-pill upcoming" id="pill-r1">R1 — Thursday</div>
-  <div class="round-status-pill upcoming" id="pill-r2">R2 — Friday</div>
-  <div class="round-status-pill upcoming" id="pill-r3">R3 — Saturday</div>
-  <div class="round-status-pill upcoming" id="pill-r4">R4 — Sunday</div>
 </div>
 
 <div class="tab-bar">
@@ -420,7 +408,10 @@ function renderDaily(){
     const parKeys=['thuPar','friPar','satPar','sunPar'];
     const sd2=standingsData[team]||{};
     const dailyPar=sd2[parKeys[rIdx]]!==undefined?fmtPar(sd2[parKeys[rIdx]]):'<span style="color:rgba(253,246,227,.2)">—</span>';
-    return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${v[2]||''}</td><td class="num score-total">${scoreVal(v[3])}</td><td class="num">${dailyPar}</td><td>${ph}</td><td>${statusBadge(v[4])}</td></tr>`;
+    const rawScore=v[3]||'';
+    const scoreDisplay=(!rawScore||rawScore===''||rawScore==='0'||isNaN(parseFloat(rawScore))||rawScore==='ACTIVE')?'<span style="color:rgba(253,246,227,.22)">—</span>':rawScore;
+    const parDisplay=(!rawScore||rawScore===''||rawScore==='0'||isNaN(parseFloat(rawScore))||rawScore==='ACTIVE')?'<span style="color:rgba(253,246,227,.22)">—</span>':dailyPar;
+    return`<tr style="animation-delay:${i*.04}s">${rankCell(v[0],i)}<td><div class="team-name">${team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${v[2]||''}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${ph}</td><td>${statusBadge(v[4])}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
   // Update banner + payout tab for active round
