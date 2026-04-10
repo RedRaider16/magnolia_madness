@@ -46,6 +46,10 @@ header .subtitle{font-size:clamp(.75rem,1.8vw,.9rem);font-weight:300;color:rgba(
 .round-btn:hover{border-color:var(--gold);color:var(--gold)}
 .round-btn.active{background:var(--gold);border-color:var(--gold);color:var(--green-deep)}
 .board-card{background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;overflow:hidden;margin-bottom:32px;backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.table-scroll::-webkit-scrollbar{height:4px;}
+.table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
+.table-scroll::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:2px;}
 table{width:100%;border-collapse:collapse}
 thead th{background:rgba(201,168,76,.12);font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);padding:13px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(201,168,76,.1)}
 thead th.num{text-align:center}
@@ -208,10 +212,12 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   <div class="section-label">🏆 Overall Leaderboard</div>
   <div class="board-card">
     <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
+    <div class="table-scroll">
     <table id="overall-table" style="display:none">
-      <thead><tr><th class="num">#</th><th>Team</th><th class="num hide-mobile">Thu</th><th class="num hide-mobile">Fri</th><th class="num hide-mobile">Sat</th><th class="num hide-mobile">Sun</th><th class="num">Total</th><th class="num">To Par</th><th>Prize</th><th>Status</th></tr></thead>
+      <thead><tr><th class="num">#</th><th>Team</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">Total</th><th class="num">To Par</th><th>Prize</th><th>Status</th></tr></thead>
       <tbody id="overall-body"></tbody>
     </table>
+    </div>
     <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
   </div>
   <div class="rules-strip">
@@ -232,10 +238,11 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   <div class="section-label">⛳ Live Masters Leaderboard</div>
   <div class="board-card">
     <div id="live-loading" class="loading"><span class="spinner"></span>Fetching live scores from Augusta…</div>
+    <div class="table-scroll">
     <table id="live-table" style="display:none">
-      <thead><tr><th class="num">Pos</th><th>Player</th><th class="num">To Par</th><th class="num">Today</th><th class="num">Thru</th><th class="num hide-mobile">R1</th><th class="num hide-mobile">R2</th><th class="num hide-mobile">R3</th><th class="num hide-mobile">R4</th></tr></thead>
+      <thead><tr><th class="num">Pos</th><th>Player</th><th class="num">To Par</th><th class="num">Today</th><th class="num">Thru</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">R4</th></tr></thead>
       <tbody id="live-body"></tbody>
-    </table>
+    </table></div>
     <div id="live-empty" class="empty-state" style="display:none"><div class="empty-icon">🌸</div><p>Live scoring begins Thursday at the first tee time</p></div>
   </div>
 </div>
