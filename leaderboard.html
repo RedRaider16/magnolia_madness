@@ -56,10 +56,7 @@ tbody tr:hover .sticky-rank,tbody tr:hover .sticky-team{background:rgba(20,45,28
   .player-cards{grid-template-columns:repeat(2,1fr)}
   .payout-grid{grid-template-columns:1fr}
   .banner-slot{min-width:90px;}
-  .sticky-rank{position:static!important;}
-  .sticky-team{position:static!important;max-width:none;white-space:nowrap;}
-  thead .sticky-rank, thead .sticky-team{position:static!important;}
-  td,thead th{padding:8px 6px;font-size:.75rem;}
+  header{padding:24px 16px 14px}
 }
 .table-scroll::-webkit-scrollbar{height:4px;}
 .table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
@@ -146,6 +143,25 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 .rule-item{font-size:.76rem;color:rgba(253,246,227,.45);line-height:1.5;padding-left:11px;border-left:2px solid rgba(201,168,76,.2)}
 .rule-item strong{color:rgba(253,246,227,.7)}
 .topar-cell{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;}
+
+/* Mobile card layout for leaderboards */
+.mobile-card-list{display:none;}
+.mobile-card{background:rgba(3,12,6,.7);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.mobile-card-rank{font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;width:28px;text-align:center;flex-shrink:0;}
+.mobile-card-body{flex:1;min-width:0;}
+.mobile-card-team{font-weight:600;font-size:.88rem;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mobile-card-owner{font-size:.65rem;color:rgba(253,246,227,.35);margin-top:1px;}
+.mobile-card-scores{display:flex;gap:8px;margin-top:5px;flex-wrap:wrap;}
+.mobile-card-score{font-family:'DM Mono',monospace;font-size:.72rem;color:rgba(253,246,227,.45);}
+.mobile-card-score span{color:var(--cream);}
+.mobile-card-right{text-align:right;flex-shrink:0;}
+.mobile-card-total{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light);}
+.mobile-card-topar{font-family:'DM Mono',monospace;font-size:.85rem;margin-top:2px;}
+.mobile-card-status{margin-top:4px;}
+@media(max-width:640px){
+  .desktop-table{display:none!important;}
+  .mobile-card-list{display:block;}
+}
 .photo-credit{position:fixed;bottom:10px;right:14px;font-size:.6rem;color:rgba(255,255,255,.18);z-index:20;}
 @media(max-width:640px){
   .hide-mobile{display:none}
@@ -212,23 +228,25 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   </div>
   <div class="board-card">
     <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
-    <div class="table-scroll">
+    <div class="table-scroll desktop-table">
     <table id="daily-table" style="display:none">
       <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="col-team">Owner</th><th class="num col-score">Score</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
       <tbody id="daily-body"></tbody>
     </table>
     </div>
+    <div id="daily-cards" class="mobile-card-list"></div>
     <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
   </div>
   <div class="section-label">🏆 Overall Leaderboard</div>
   <div class="board-card">
     <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
-    <div class="table-scroll">
+    <div class="table-scroll desktop-table">
     <table id="overall-table" style="display:none">
       <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="num col-score">Thu</th><th class="num col-score">Fri</th><th class="num col-score">Sat</th><th class="num col-score">Sun</th><th class="num col-score">Total</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
       <tbody id="overall-body"></tbody>
     </table>
     </div>
+    <div id="overall-cards" class="mobile-card-list"></div>
     <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
   </div>
   <div class="rules-strip">
@@ -390,6 +408,37 @@ async function loadOverall(){
       return`<tr style="animation-delay:${i*.04}s"><td class="rank-cell ${rankCls} sticky-rank">${rankIcon}</td><td class="sticky-team"><div class="team-name">${team}</div><div class="owner-name">${v[2]||''}</div></td><td class="num">${scoreVal(v[3])}<br><small>${thuPar}</small></td><td class="num hide-mobile">${scoreVal(v[4])}<br><small>${friPar}</small></td><td class="num hide-mobile">${scoreVal(v[5])}<br><small>${satPar}</small></td><td class="num hide-mobile">${scoreVal(v[6])}<br><small>${sunPar}</small></td><td class="num score-total">${v[7]||'—'}</td><td class="num">${totalPar}</td><td>${statusBadge(status)}</td></tr>`;
     }).join('');
     document.getElementById('overall-table').style.display='table';
+
+  // Mobile cards for overall
+  document.getElementById('overall-cards').innerHTML=overallData.map((r,i)=>{
+    const v=Object.values(r);const team=v[1]||'—';
+    const pi=prizes[team];
+    const sd=standingsData[team]||{};
+    const rankNum=parseInt(v[0])||(i+1);
+    const rankCls=rankNum===1?'rank-1':rankNum===2?'rank-2':rankNum===3?'rank-3':'rank-other';
+    const rankIcon=rankNum<=3?['🥇','🥈','🥉'][rankNum-1]:rankNum;
+    const thuStr=v[3]?`Thu: ${v[3]}`:'';
+    const friStr=v[4]?`Fri: ${v[4]}`:'';
+    const totalPar=sd.totalPar!==null&&sd.totalPar!==undefined?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.3)">—</span>';
+    const prizeStr=pi?`${fmt$(pi.prize)}${pi.isTie?' split ×'+pi.count:''}`:'';
+    return`<div class="mobile-card">
+      <div class="mobile-card-rank ${rankCls}">${rankIcon}</div>
+      <div class="mobile-card-body">
+        <div class="mobile-card-team">${team}</div>
+        <div class="mobile-card-owner">${v[2]||''}</div>
+        <div class="mobile-card-scores">
+          ${thuStr?`<div class="mobile-card-score">${thuStr}</div>`:''}
+          ${friStr?`<div class="mobile-card-score">${friStr}</div>`:''}
+          ${prizeStr?`<div class="mobile-card-score" style="color:#7dd9a0">${prizeStr}</div>`:''}
+        </div>
+      </div>
+      <div class="mobile-card-right">
+        <div class="mobile-card-total">${v[7]||'—'}</div>
+        <div class="mobile-card-topar">${totalPar}</div>
+        <div class="mobile-card-status">${statusBadge(v[8]||'ACTIVE')}</div>
+      </div>
+    </div>`;
+  }).join('');
     // Update banner + payout tab overall
     [1,2,3,4].forEach((place,idx)=>{
       const id=['1st','2nd','3rd','4th'][idx];
@@ -466,6 +515,30 @@ function renderDaily(){
     return`<tr style="animation-delay:${i*.04}s"><td class="rank-cell ${dRankCls} sticky-rank">${dRankIcon}</td><td class="sticky-team"><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
+
+  // Mobile cards
+  document.getElementById('daily-cards').innerHTML=teams.map((t,i)=>{
+    const pi=dailyPrizes[t.team];
+    const rankNum=i+1;
+    const rankCls=rankNum===1?'rank-1':rankNum===2?'rank-2':rankNum===3?'rank-3':'rank-other';
+    const rankIcon=rankNum<=3?['🥇','🥈','🥉'][rankNum-1]:rankNum;
+    const scoreStr=t.score||'—';
+    const parStr=t.par!==null&&t.par!==undefined?fmtPar(t.par):'<span style="color:rgba(253,246,227,.3)">—</span>';
+    const prizeStr=pi?`<span style="color:#7dd9a0;font-size:.72rem">${fmt$(pi.prize)}${pi.isTie?' split':''}</span>`:'';
+    return`<div class="mobile-card">
+      <div class="mobile-card-rank ${rankCls}">${rankIcon}</div>
+      <div class="mobile-card-body">
+        <div class="mobile-card-team">${t.team}</div>
+        <div class="mobile-card-owner">${t.owner}</div>
+        <div class="mobile-card-scores">
+          <div class="mobile-card-score">Score: <span>${scoreStr}</span></div>
+          <div class="mobile-card-score">To Par: <span>${parStr}</span></div>
+          ${prizeStr?`<div class="mobile-card-score">${prizeStr}</div>`:''}
+        </div>
+      </div>
+      <div class="mobile-card-right">${statusBadge(t.status)}</div>
+    </div>`;
+  }).join('');
 
   // Update banner and payouts tab
   const leader=teams[0];
