@@ -56,16 +56,9 @@ tbody tr:hover .sticky-rank,tbody tr:hover .sticky-team{background:rgba(20,45,28
   .player-cards{grid-template-columns:repeat(2,1fr)}
   .payout-grid{grid-template-columns:1fr}
   .banner-slot{min-width:90px;}
-  table{min-width:620px;}
-  .col-rank{width:26px;}
-  .col-team{width:110px;}
-  .col-score{width:62px;}
-  .col-prize{width:75px;}
-  .col-status{width:75px;}
-  .sticky-rank{width:26px;min-width:26px;max-width:26px;font-size:.72rem;padding:8px 2px;}
-  .sticky-team{min-width:110px;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .sticky-team .team-name{font-size:.75rem;}
-  .sticky-team .owner-name{font-size:.6rem;}
+  .sticky-rank{position:static!important;}
+  .sticky-team{position:static!important;max-width:none;white-space:nowrap;}
+  thead .sticky-rank, thead .sticky-team{position:static!important;}
   td,thead th{padding:8px 6px;font-size:.75rem;}
 }
 .table-scroll::-webkit-scrollbar{height:4px;}
