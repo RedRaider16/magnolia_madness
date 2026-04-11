@@ -667,17 +667,36 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   // ── ACTIVE PLAYER ──
   const topar=live.topar;
   const thru=live.thru;
-  const period=live.period||1; // current round (1=Thu,2=Fri,3=Sat,4=Sun)
+  const period=live.period||1;
 
-  // Detect truly complete rounds by raw score range (65-90 = valid 18-hole score)
+  // Detect truly complete rounds by raw score range (65-95 = valid 18-hole score)
   const r1raw=parseInt(live.r1)||0;
   const r2raw=parseInt(live.r2)||0;
   const r3raw=parseInt(live.r3)||0;
   const r4raw=parseInt(live.r4)||0;
-  const r1done=r1raw>=65&&r1raw<=90;
-  const r2done=r2raw>=65&&r2raw<=90;
-  const r3done=r3raw>=65&&r3raw<=90;
-  const r4done=r4raw>=65&&r4raw<=90;
+  const r1done=r1raw>=65&&r1raw<=95;
+  const r2done=r2raw>=65&&r2raw<=95;
+  const r3done=r3raw>=65&&r3raw<=95;
+  const r4done=r4raw>=65&&r4raw<=95;
+
+  // Masters 2026 official cut line: 149 (R1+R2 combined, +5 over 36-hole par)
+  const MASTERS_CUT = 149;
+  const missedCut = r1done && r2done && (r1raw + r2raw) > MASTERS_CUT;
+
+  // If player missed cut, show MC card
+  if(missedCut){
+    const r1par=r1raw-72; const r2par=r2raw-72;
+    const r1str=`R1: ${r1par<0?r1par:r1par>0?'+'+r1par:'E'} (${r1raw})`;
+    const r2str=`R2: ${r2par<0?r2par:r2par>0?'+'+r2par:'E'} (${r2raw})`;
+    return`<div class="player-mini-card card-mc ${isDropped?'card-dropped':''}">
+      <div class="tier-badge">${tier}</div>
+      <div class="pname">${name||'—'}</div>
+      <div class="live-score"><span class="over-par">${toParHTML(topar)}</span></div>
+      <div class="live-rounds">${r1str} · ${r2str}</div>
+      <span class="cut-warning cut-danger">❌ Missed Cut</span>
+      <div class="live-detail" style="margin-top:6px;color:rgba(253,246,227,.45)">Scores: 80 · 80 (Sat & Sun)</div>
+    </div>`;
+  }
 
   // Current round in progress
   const currentRound=r4done?5:r3done?4:r2done?3:r1done?2:1;
