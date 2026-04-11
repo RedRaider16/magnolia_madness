@@ -724,15 +724,9 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   if(r4done){const p=r4raw-72;histParts.push(`R4: ${p<0?p:p>0?'+'+p:'E'} (${r4raw})`);}
   const roundHistory=histParts.length>0?`<div class="live-rounds">${histParts.join(' · ')}</div>`:'';
 
-  // Cut line indicator — Augusta cut typically top 50 + ties
-  // Use tournament to-par as proxy: <= +3 is generally safe after R2
-  let cutBadge='';
-  const toparNum=parseFloat(live.topar);
-  if(!isNaN(toparNum)&&(r1done||r2done)){
-    if(toparNum<=-2)       cutBadge='<span class="cut-warning cut-safe">✓ Safe</span>';
-    else if(toparNum<=3)   cutBadge='<span class="cut-warning cut-warning-amber">⚠️ Near Cut</span>';
-    else                   cutBadge='<span class="cut-warning cut-danger">⚠️ Cut Risk</span>';
-  }
+  // Cut badge removed for active players — cut is now official
+  // MC players are handled separately above
+  const cutBadge='';
 
   return`<div class="player-mini-card ${isCounting?'card-counting':isDropped?'card-dropped':''}">
     <div class="tier-badge">${tier}</div>
