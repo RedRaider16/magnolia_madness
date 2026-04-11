@@ -347,27 +347,26 @@ function statusBadge(s){const u=(s||'ACTIVE').toUpperCase();return`<span class="
 function rankCell(rank,i){const n=parseInt(rank)||(i+1);const cls=n===1?'rank-1':n===2?'rank-2':n===3?'rank-3':'rank-other';const icon=n<=3?['🥇','🥈','🥉'][n-1]:rank;return`<td class="rank-cell ${cls}">${icon}</td>`;}
 function fmt$(n){if(n===Math.floor(n))return'$'+n.toLocaleString();return'$'+n.toFixed(2);}
 
+// Helper: get current round index based on CST date
+function getCurrentRoundIdx(){
+  const cst=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Chicago'}));
+  const d=cst.getDate(),m=cst.getMonth()+1,y=cst.getFullYear();
+  if(y===2026&&m===4){
+    if(d===9) return 0;
+    if(d===10) return 1;
+    if(d===11) return 2;
+    if(d>=12) return 3;
+  }
+  return 0;
+}
+
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');});});
 document.querySelectorAll('.round-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.round-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDaily();});});
 
 // Auto-detect current round based on date (CST)
 function autoDetectRound(){
-  const now = new Date();
-  const cst = new Date(now.toLocaleString('en-US',{timeZone:'America/Chicago'}));
-  const month = cst.getMonth()+1;
-  const day   = cst.getDate();
-  const year  = cst.getFullYear();
-
-  let roundIdx = 0;
-  if(year===2026 && month===4){
-    if(day===9)       roundIdx=0; // Thu
-    else if(day===10) roundIdx=1; // Fri
-    else if(day===11) roundIdx=2; // Sat
-    else if(day===12) roundIdx=3; // Sun
-    else if(day>12)   roundIdx=3; // After Sun keep on Sun
-  }
-
+  const roundIdx=getCurrentRoundIdx();
   document.querySelectorAll('.round-btn').forEach((b,i)=>{
     b.classList.toggle('active', i===roundIdx);
   });
@@ -469,8 +468,6 @@ async function loadOverall(){
 
 // Daily
 async function loadDaily(){
-  // Daily data now comes from Team_Standings which has all rounds
-  // We use standingsData which is loaded by loadStandings()
   renderDaily();
 }
 function renderDaily(){
@@ -485,27 +482,23 @@ function renderDaily(){
   const roundKeys=['thu','fri','sat','sun'];
   const roundKey=roundKeys[rIdx]||'thu';
 
-  // Build sorted rows from standingsData
   const teams=Object.entries(standingsData).map(([team,sd])=>({
     team,
-    owner:'', // owner not in standings, will look up from overallData
+    owner:'',
     score:parseFloat(sd[rawKeys[rIdx]])||null,
     par:sd[parKeys[rIdx]],
     status:sd.status||'ACTIVE'
   })).filter(r=>r.team&&r.score!==null&&!isNaN(r.score)&&r.score>0);
 
-  // Add owner names from overallData
   teams.forEach(t=>{
     const od=overallData.find(r=>Object.values(r)[0]===t.team||Object.values(r)[1]===t.team);
     if(od){const v=Object.values(od);t.owner=v[2]||'';}
   });
 
-  // Sort by score ascending
   teams.sort((a,b)=>a.score-b.score);
 
   if(!teams.length){
     document.getElementById('daily-empty').style.display='block';
-    // Reset banner for this round
     document.getElementById(`b-${roundKey}-leader`).textContent='—';
     document.getElementById(`b-${roundKey}-tie`).textContent='';
     return;
@@ -518,14 +511,12 @@ function renderDaily(){
     let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
     if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
     const scoreDisplay=t.score?t.score:'<span style="color:rgba(253,246,227,.22)">—</span>';
-    // Only show to-par if score looks like a complete round (4 players × ~70 = ~280 minimum)
     const parDisplay=(t.par!==null&&t.par!==undefined)?fmtPar(t.par):'<span style="color:rgba(253,246,227,.22)">—</span>';
     const dRankNum=i+1;const dRankCls=dRankNum===1?'rank-1':dRankNum===2?'rank-2':dRankNum===3?'rank-3':'rank-other';const dRankIcon=dRankNum<=3?['🥇','🥈','🥉'][dRankNum-1]:dRankNum;
     return`<tr style="animation-delay:${i*.04}s"><td class="rank-cell ${dRankCls} sticky-rank">${dRankIcon}</td><td class="sticky-team"><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
 
-  // Mobile cards
   document.getElementById('daily-cards').innerHTML=teams.map((t,i)=>{
     const pi=dailyPrizes[t.team];
     const rankNum=i+1;
@@ -549,7 +540,6 @@ function renderDaily(){
     </div>`;
   }).join('');
 
-  // Update banner and payouts tab
   const leader=teams[0];
   const pi=leader?dailyPrizes[leader.team]:null;
   const amt=pi?pi.prize:100;
@@ -577,9 +567,6 @@ async function loadLive(){
       const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||tr);
       const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
       const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
-      // Get current round index from number of completed rounds
-      // Get ESPN's own per-round to-par from linescores
-      // linescores array has value=raw score and displayValue=to-par for each round
       const roundScores=ls.map(l=>({
         raw:l.value??'',
         topar:l.displayValue??''
@@ -587,19 +574,17 @@ async function loadLive(){
       while(roundScores.length<4) roundScores.push({raw:'',topar:''});
 
       liveScores[name]={
-        topar:tp,           // tournament to-par from ESPN
-        today:td,           // today's raw score
+        topar:tp,
+        today:td,
         thru,
-        // Raw round scores
         r1:roundScores[0].raw, r2:roundScores[1].raw,
         r3:roundScores[2].raw, r4:roundScores[3].raw,
-        // ESPN's own to-par per round
         r1par:roundScores[0].topar, r2par:roundScores[1].topar,
         r3par:roundScores[2].topar, r4par:roundScores[3].topar,
         pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),
         isMC:sn.includes('cut'),
         isWD:sn.includes('wd')||sn.includes('withdraw'),
-        period:c.status?.period||1,        // current round number
+        period:c.status?.period||1,
         finished:c.status?.type?.completed||false
       };
     });
@@ -640,7 +625,6 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
-  // ── MISSED CUT ──
   if(live.isMC){
     const r1str=live.r1par?`R1: ${live.r1par} (${live.r1})`:'';
     const r2str=live.r2par?` · R2: ${live.r2par} (${live.r2})`:'';
@@ -654,7 +638,6 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
-  // ── WITHDRAWN ──
   if(live.isWD){
     return`<div class="player-mini-card" style="border-color:rgba(100,100,100,.3);opacity:.6">
       <div class="tier-badge">${tier}</div>
@@ -664,12 +647,10 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
-  // ── ACTIVE PLAYER ──
   const topar=live.topar;
   const thru=live.thru;
   const period=live.period||1;
 
-  // Detect truly complete rounds by raw score range (65-95 = valid 18-hole score)
   const r1raw=parseInt(live.r1)||0;
   const r2raw=parseInt(live.r2)||0;
   const r3raw=parseInt(live.r3)||0;
@@ -679,11 +660,9 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   const r3done=r3raw>=65&&r3raw<=95;
   const r4done=r4raw>=65&&r4raw<=95;
 
-  // Masters 2026 official cut line: 149 (R1+R2 combined, +5 over 36-hole par)
   const MASTERS_CUT = 149;
   const missedCut = r1done && r2done && (r1raw + r2raw) > MASTERS_CUT;
 
-  // If player missed cut, show MC card
   if(missedCut){
     const r1par=r1raw-72; const r2par=r2raw-72;
     const r1str=`R1: ${r1par<0?r1par:r1par>0?'+'+r1par:'E'} (${r1raw})`;
@@ -698,15 +677,11 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
-  // Current round in progress
   const currentRound=r4done?5:r3done?4:r2done?3:r1done?2:1;
-  const isPlaying=!r4done&&(currentRound<=4); // still playing if not all rounds done
-
-  // Round complete badge
+  const isPlaying=!r4done&&(currentRound<=4);
   const allDone=live.finished&&!isPlaying;
   const roundBadge=allDone?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
 
-  // Thru display — use raw score range to detect truly complete rounds
   let thruDisplay='';
   if(!isPlaying){
     thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
@@ -716,16 +691,13 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
   }
 
-  // Today's live round progress (ESPN to-par for current round)
   let todayDisplay='';
   if(isPlaying){
-    // Today's live to-par = tournament total minus all completed previous rounds
     const prevRoundsPar=(r1done?(r1raw-72):0)+(r2done?(r2raw-72):0)+(r3done?(r3raw-72):0);
     const todayPar=parseFloat(live.topar)-prevRoundsPar;
     if(!isNaN(todayPar)){
       const pStr=todayPar<0?String(todayPar):todayPar>0?'+'+todayPar:'E';
       const pCol=todayPar<0?'#f0b84a':todayPar>0?'#f08080':'rgba(253,246,227,.7)';
-      // Thru hole — use raw partial score as proxy for holes played if thru not reliable
       const holesPlayed=r2raw>0&&r2raw<65?Math.round(r2raw/4):
                         r1raw>0&&r1raw<65?Math.round(r1raw/4):null;
       const thruStr=thru&&!isNaN(parseInt(thru))?` · Hole ${thru}`:
@@ -734,17 +706,12 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     }
   }
 
-  // Completed round history using ESPN's own to-par values
-  // Round history — only show truly complete rounds (65-90 raw score)
   const histParts=[];
   if(r1done){const p=r1raw-72;histParts.push(`R1: ${p<0?p:p>0?'+'+p:'E'} (${r1raw})`);}
   if(r2done){const p=r2raw-72;histParts.push(`R2: ${p<0?p:p>0?'+'+p:'E'} (${r2raw})`);}
   if(r3done){const p=r3raw-72;histParts.push(`R3: ${p<0?p:p>0?'+'+p:'E'} (${r3raw})`);}
   if(r4done){const p=r4raw-72;histParts.push(`R4: ${p<0?p:p>0?'+'+p:'E'} (${r4raw})`);}
   const roundHistory=histParts.length>0?`<div class="live-rounds">${histParts.join(' · ')}</div>`:'';
-
-  // Cut badge removed for active players — cut is now official
-  // MC players are handled separately above
   const cutBadge='';
 
   return`<div class="player-mini-card ${isCounting?'card-counting':isDropped?'card-dropped':''}">
@@ -758,20 +725,28 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   </div>`;
 }
 
-
 function renderTeamCard(e){
   const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
   const al=getLive(alt);const as=al?(al.isMC?'MC':al.isWD?'WD':toParHTML(al.topar)):'Standby';
 
-  // Calculate best 4 of 5 — get to-par for each player, sort, mark bottom 4 as counting
   const players=[e['Tier_A']||'',e['Tier_B']||'',e['Tier_C']||'',e['Tier_D1']||'',e['Tier_D2']||''];
+
+  // ── FIX: Drop is based on today's round raw score, not overall to-par ──
+  const rIdx=getCurrentRoundIdx();
+  const roundRawKeys=['r1','r2','r3','r4'];
+  const roundKey=roundRawKeys[rIdx];
+
   const playerScores=players.map(name=>{
     const live=getLive(name);
-    if(!live||live.isMC||live.isWD) return{name,topar:999,isMC:live?live.isMC:false,isWD:live?live.isWD:false};
-    return{name,topar:parseFloat(live.topar)||0,isMC:false,isWD:false};
+    if(!live) return{name,score:999,isMC:false,isWD:false};
+    if(live.isMC||live.isWD) return{name,score:80,isMC:live.isMC,isWD:live.isWD};
+    const raw=parseFloat(live[roundKey])||0;
+    // Use raw round score if it looks like a valid 18-hole score; otherwise fall back
+    const score=raw>=60?raw:(parseFloat(live.topar)||0)+1000;
+    return{name,score,isMC:false,isWD:false};
   });
+  // ── END FIX ──
 
-  // Count missed cuts for penalty/eliminated logic
   const mcCount=playerScores.filter(p=>p.isMC).length;
   const wdCount=playerScores.filter(p=>p.isWD).length;
   const totalMC=mcCount+wdCount;
@@ -782,8 +757,8 @@ function renderTeamCard(e){
     teamStatusBanner='<div class="team-status-banner team-penalty">⚠️ Penalty — 2 Missed Cuts</div>';
   }
 
-  // Sort by to-par ascending to find best 4
-  const sorted=[...playerScores].sort((a,b)=>a.topar-b.topar);
+  // Sort by score ascending — lowest (best) raw score counts, highest dropped
+  const sorted=[...playerScores].sort((a,b)=>a.score-b.score);
   const counting=new Set(sorted.slice(0,4).map(p=>p.name));
   const dropped=sorted.length>=5?sorted[4].name:'';
 
@@ -806,8 +781,6 @@ async function loadStandings(){
     standingsData={};
     rows.forEach(r=>{
       if(r['Team_Name']){
-        // A complete round score for best-4-of-5 should be >= 200 (4 x ~50 minimum)
-        // If below 200 the round is in progress - don't show to-par
         const thuRaw=parseFloat(r['Thu_Raw'])||0;
         const friRaw=parseFloat(r['Fri_Raw'])||0;
         const satRaw=parseFloat(r['Sat_Raw'])||0;
