@@ -135,6 +135,15 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 .cut-safe{background:rgba(45,125,79,.2);color:#7dd9a0;border:1px solid rgba(45,125,79,.35);}
 .cut-danger{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.35);animation:pulse 2s ease-in-out infinite;}
 .cut-warning-amber{background:rgba(196,122,26,.2);color:#f0b84a;border:1px solid rgba(196,122,26,.35);}
+.card-counting{border:2px solid rgba(201,168,76,.6)!important;background:rgba(201,168,76,.08)!important;box-shadow:0 0 12px rgba(201,168,76,.2);}
+.card-counting::before{content:'✦ COUNTING';font-size:.55rem;font-weight:700;letter-spacing:.15em;color:var(--gold);display:block;margin-bottom:6px;}
+.card-dropped{opacity:.55;border-color:rgba(255,255,255,.05)!important;}
+.card-dropped::before{content:'DROPPED';font-size:.55rem;font-weight:700;letter-spacing:.15em;color:rgba(253,246,227,.3);display:block;margin-bottom:6px;}
+.card-mc{border:2px solid rgba(176,48,48,.5)!important;background:rgba(176,48,48,.06)!important;}
+.team-status-banner{border-radius:8px;padding:8px 14px;margin:0 22px 12px;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.team-eliminated{background:rgba(176,48,48,.2);color:#f08080;border:1px solid rgba(176,48,48,.4);}
+.team-penalty{background:rgba(196,122,26,.2);color:#f0b84a;border:1px solid rgba(196,122,26,.4);}
+.card-mc::before{content:'❌ MISSED CUT';font-size:.55rem;font-weight:700;letter-spacing:.15em;color:#f08080;display:block;margin-bottom:6px;}
 .alt-card{background:rgba(255,255,255,.02);border:1px dashed rgba(201,168,76,.18);border-radius:9px;padding:11px 16px;margin:0 22px 18px;font-size:.8rem;color:rgba(253,246,227,.45)}
 .alt-card strong{color:rgba(253,246,227,.65)}
 .rules-strip{background:rgba(3,12,6,.65);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:18px 22px;margin-top:6px;backdrop-filter:blur(12px)}
@@ -619,11 +628,11 @@ function populateTeamSelect(){
   entriesData.filter(r=>r['Team_Name']).forEach(r=>{const o=document.createElement('option');o.value=r['Team_Name'];o.textContent=(r['Team_Name']||'—')+(r['Participant_Name']?` (${r['Participant_Name']})`:'' );sel.appendChild(o);});
   if(!sel._hasListener){sel._hasListener=true;sel.addEventListener('change',()=>{const row=entriesData.find(r=>r['Team_Name']===sel.value);if(row){document.getElementById('team-empty').style.display='none';renderTeamCard(row);}else{document.getElementById('team-display').innerHTML='';document.getElementById('team-empty').style.display='block';}});}
 }
-function pCard(tier,name){
+function pCard(tier,name,isCounting=false,isDropped=false){
   const live=getLive(name);
 
   if(!live){
-    return`<div class="player-mini-card">
+    return`<div class="player-mini-card ${isCounting?'card-counting':isDropped?'card-dropped':''}">
       <div class="tier-badge">${tier}</div>
       <div class="pname">${name||'—'}</div>
       <div class="live-score"><span style="color:rgba(253,246,227,.3)">Pending</span></div>
@@ -635,7 +644,7 @@ function pCard(tier,name){
   if(live.isMC){
     const r1str=live.r1par?`R1: ${live.r1par} (${live.r1})`:'';
     const r2str=live.r2par?` · R2: ${live.r2par} (${live.r2})`:'';
-    return`<div class="player-mini-card" style="border-color:rgba(176,48,48,.3);opacity:.7">
+    return`<div class="player-mini-card card-mc">
       <div class="tier-badge">${tier}</div>
       <div class="pname">${name||'—'}</div>
       <div class="live-score"><span class="over-par">${live.topar!==null&&!isNaN(live.topar)?toParHTML(live.topar):'MC'}</span></div>
@@ -725,7 +734,7 @@ function pCard(tier,name){
     else                   cutBadge='<span class="cut-warning cut-danger">⚠️ Cut Risk</span>';
   }
 
-  return`<div class="player-mini-card">
+  return`<div class="player-mini-card ${isCounting?'card-counting':isDropped?'card-dropped':''}">
     <div class="tier-badge">${tier}</div>
     <div class="pname">${name||'—'}${roundBadge}</div>
     <div class="live-score">${toParHTML(topar)}</div>
@@ -740,8 +749,39 @@ function pCard(tier,name){
 function renderTeamCard(e){
   const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
   const al=getLive(alt);const as=al?(al.isMC?'MC':al.isWD?'WD':toParHTML(al.topar)):'Standby';
-  const cards=[pCard('Tier A',e['Tier_A']||''),pCard('Tier B',e['Tier_B']||''),pCard('Tier C',e['Tier_C']||''),pCard('Tier D',e['Tier_D1']||''),pCard('Tier D',e['Tier_D2']||'')].join('');
-  document.getElementById('team-display').innerHTML=`<div class="team-card"><div class="team-card-header"><h2>${tn}</h2><div class="owner">🏌️ ${own}</div></div><div class="team-meta"><div class="team-meta-item"><div class="label">Entry Status</div><div class="value" style="font-size:.82rem">${statusBadge(st)}</div></div><div class="team-meta-item"><div class="label">Scoring</div><div class="value" style="font-size:.72rem;color:rgba(253,246,227,.45)">Best 4 of 5</div></div></div><div class="player-cards">${cards}</div><div class="alt-card">⛳ <strong>Alternate:</strong> ${alt} &nbsp;&nbsp; ${as}</div></div><div class="rules-strip" style="margin-top:0"><h3>ℹ️ Scoring Note</h3><div class="rule-item">Scores shown are live to-par from Augusta. Your daily team total = best 4 of 5 strokes (highest dropped). Missed cut players receive 80 for Saturday & Sunday.</div></div>`;
+
+  // Calculate best 4 of 5 — get to-par for each player, sort, mark bottom 4 as counting
+  const players=[e['Tier_A']||'',e['Tier_B']||'',e['Tier_C']||'',e['Tier_D1']||'',e['Tier_D2']||''];
+  const playerScores=players.map(name=>{
+    const live=getLive(name);
+    if(!live||live.isMC||live.isWD) return{name,topar:999,isMC:live?live.isMC:false,isWD:live?live.isWD:false};
+    return{name,topar:parseFloat(live.topar)||0,isMC:false,isWD:false};
+  });
+
+  // Count missed cuts for penalty/eliminated logic
+  const mcCount=playerScores.filter(p=>p.isMC).length;
+  const wdCount=playerScores.filter(p=>p.isWD).length;
+  const totalMC=mcCount+wdCount;
+  let teamStatusBanner='';
+  if(totalMC>=3){
+    teamStatusBanner='<div class="team-status-banner team-eliminated">🚫 Eliminated — 3+ Missed Cuts</div>';
+  } else if(totalMC===2){
+    teamStatusBanner='<div class="team-status-banner team-penalty">⚠️ Penalty — 2 Missed Cuts</div>';
+  }
+
+  // Sort by to-par ascending to find best 4
+  const sorted=[...playerScores].sort((a,b)=>a.topar-b.topar);
+  const counting=new Set(sorted.slice(0,4).map(p=>p.name));
+  const dropped=sorted.length>=5?sorted[4].name:'';
+
+  const cards=[
+    pCard('Tier A',e['Tier_A']||'',counting.has(e['Tier_A']),e['Tier_A']===dropped),
+    pCard('Tier B',e['Tier_B']||'',counting.has(e['Tier_B']),e['Tier_B']===dropped),
+    pCard('Tier C',e['Tier_C']||'',counting.has(e['Tier_C']),e['Tier_C']===dropped),
+    pCard('Tier D',e['Tier_D1']||'',counting.has(e['Tier_D1']),e['Tier_D1']===dropped),
+    pCard('Tier D',e['Tier_D2']||'',counting.has(e['Tier_D2']),e['Tier_D2']===dropped),
+  ].join('');
+  document.getElementById('team-display').innerHTML=`<div class="team-card"><div class="team-card-header"><h2>${tn}</h2><div class="owner">🏌️ ${own}</div></div><div class="team-meta"><div class="team-meta-item"><div class="label">Entry Status</div><div class="value" style="font-size:.82rem">${statusBadge(st)}</div></div><div class="team-meta-item"><div class="label">Scoring</div><div class="value" style="font-size:.72rem;color:rgba(253,246,227,.45)">Best 4 of 5</div></div></div>${teamStatusBanner}<div class="player-cards">${cards}</div><div class="alt-card">⛳ <strong>Alternate:</strong> ${alt} &nbsp;&nbsp; ${as}</div></div><div class="rules-strip" style="margin-top:0"><h3>ℹ️ Scoring Note</h3><div class="rule-item">Scores shown are live to-par from Augusta. Your daily team total = best 4 of 5 strokes (highest dropped). Missed cut players receive 80 for Saturday & Sunday.</div></div>`;
 }
 function renderTeamDisplay(){const sel=document.getElementById('team-select');if(!sel.value)return;const row=entriesData.find(r=>r['Team_Name']===sel.value);if(row)renderTeamCard(row);}
 
