@@ -52,9 +52,11 @@ thead .sticky-rank{background:rgba(13,32,20,.98);}
 thead .sticky-team{background:rgba(13,32,20,.98);}
 tbody tr:hover .sticky-rank,tbody tr:hover .sticky-team{background:rgba(20,45,28,.98);}
 @media(max-width:640px){
-  .sticky-team{min-width:80px;max-width:110px;}
-  .sticky-team .team-name{font-size:.78rem;}
+  .sticky-rank{width:24px;min-width:24px;max-width:24px;font-size:.75rem;}
+  .sticky-team{min-width:90px;max-width:130px;}
+  .sticky-team .team-name{font-size:.72rem;white-space:normal;overflow:visible;text-overflow:unset;line-height:1.2;}
   .sticky-team .owner-name{display:none;}
+  td,thead th{padding:8px 6px;}
 }
 .table-scroll::-webkit-scrollbar{height:4px;}
 .table-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);}
