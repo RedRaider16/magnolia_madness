@@ -455,24 +455,25 @@ async function loadOverall(){
   const prizeMap={1:500,2:225,3:125,4:50};
   const bannerIds=['1st','2nd','3rd','4th'];
 
-  // Build prize groups
+  // Build prize groups — track actual place numbers
   const prizeGroups=[];
   let ri=0;
+  let actualPlace=1; // tracks the real position number
   while(ri<sortedRows.length&&prizeGroups.length<4){
     const team=sortedRows[ri].team;
     const pi=prizes[team];
     if(pi){
-      const place=prizeGroups.length+1;
       const groupTeams=sortedRows.slice(ri,ri+(pi.isTie?pi.count:1)).map(r=>r.team);
-      prizeGroups.push({place,teams:groupTeams,prize:pi.prize,isTie:pi.isTie,count:pi.isTie?pi.count:1});
+      prizeGroups.push({place:actualPlace,teams:groupTeams,prize:pi.prize,isTie:pi.isTie,count:pi.isTie?pi.count:1});
+      actualPlace+=pi.isTie?pi.count:1; // next place skips tied positions
       ri+=pi.isTie?pi.count:1;
-    } else { ri++; }
+    } else { ri++; actualPlace++; }
   }
 
   // Render merged banner slots
   const bannerRow=document.getElementById('overall-banner-row');
   bannerRow.innerHTML=prizeGroups.map(g=>{
-    const label=g.isTie?`T-${g.place}`:placeLabels[g.place-1];
+    const label=g.isTie?`T-${g.place}`:(g.place<=4?placeLabels[g.place-1]:`${g.place}th Place`);
     const teamNames=g.teams.map(t=>`<div style="font-size:.72rem;color:rgba(253,246,227,.75);margin-top:3px;overflow:hidden;text-overflow:ellipsis;">${t}</div>`).join('');
     const tieInfo=g.isTie?`<div style="font-size:.6rem;color:rgba(201,168,76,.6);margin-top:4px;">${fmt$(g.prize)} each · split ×${g.count}</div>`:'';
     return`<div class="banner-slot" style="flex:${g.count};min-width:${g.count>1?'200px':'120px'};text-align:center;">
