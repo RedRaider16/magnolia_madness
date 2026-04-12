@@ -209,9 +209,9 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
     <div class="banner-divider"></div>
     <div class="banner-row-label">📅 Daily Low Score</div>
     <div class="banner-row">
-      <div class="banner-slot daily-slot"><div class="slot-label">Thursday</div><div class="slot-prize" id="b-thu-prize">$100</div><div class="slot-leader" id="b-thu-leader">—</div><div class="slot-tie" id="b-thu-tie"></div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Friday</div><div class="slot-prize" id="b-fri-prize">$100</div><div class="slot-leader" id="b-fri-leader">—</div><div class="slot-tie" id="b-fri-tie"></div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize" id="b-sat-prize">$100</div><div class="slot-leader" id="b-sat-leader">—</div><div class="slot-tie" id="b-sat-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Thursday</div><div class="slot-prize">$100</div><div class="slot-leader">Cornflakes</div><div class="slot-tie">278 (-10) ✓ Final</div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Friday</div><div class="slot-prize">$100</div><div class="slot-leader">BNutt2</div><div class="slot-tie">273 (-15) ✓ Final</div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize">$100</div><div class="slot-leader">nickwizzz</div><div class="slot-tie">271 (-17) ✓ Final</div></div>
     </div>
   </div>
 </div>
@@ -225,6 +225,18 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 
 <!-- POOL LEADERBOARD -->
 <div class="panel active" id="panel-pool">
+  <div class="section-label">🏆 Overall Leaderboard</div>
+  <div class="board-card">
+    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
+    <div class="table-scroll desktop-table">
+    <table id="overall-table" style="display:none">
+      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="num col-score">Thu</th><th class="num col-score">Fri</th><th class="num col-score">Sat</th><th class="num col-score">Sun</th><th class="num col-score">Total</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
+      <tbody id="overall-body"></tbody>
+    </table>
+    </div>
+    <div id="overall-cards" class="mobile-card-list"></div>
+    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
+  </div>
   <div class="section-label">📅 Daily Leaderboard</div>
   <div class="round-selector">
     <button class="round-btn active" data-round="0">Thursday</button>
@@ -242,18 +254,6 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
     </div>
     <div id="daily-cards" class="mobile-card-list"></div>
     <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
-  </div>
-  <div class="section-label">🏆 Overall Leaderboard</div>
-  <div class="board-card">
-    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
-    <div class="table-scroll desktop-table">
-    <table id="overall-table" style="display:none">
-      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="num col-score">Thu</th><th class="num col-score">Fri</th><th class="num col-score">Sat</th><th class="num col-score">Sun</th><th class="num col-score">Total</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
-      <tbody id="overall-body"></tbody>
-    </table>
-    </div>
-    <div id="overall-cards" class="mobile-card-list"></div>
-    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
   </div>
   <div class="rules-strip">
     <h3>📋 Quick Rules</h3>
