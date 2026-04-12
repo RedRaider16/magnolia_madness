@@ -360,9 +360,7 @@ function autoDetectRound(){
   if(year===2026 && month===4){
     if(day===9)       roundIdx=0; // Thu
     else if(day===10) roundIdx=1; // Fri
-    else if(day===11) roundIdx=2; // Sat
-    else if(day===12) roundIdx=3; // Sun
-    else if(day>12)   roundIdx=3; // After Sun keep on Sun
+    else if(day>=11)  roundIdx=2; // Sat (no Sunday daily payout)
   }
 
   document.querySelectorAll('.round-btn').forEach((b,i)=>{
@@ -423,8 +421,11 @@ async function loadOverall(){
     const rankNum=parseInt(v[0])||(i+1);
     const rankCls=rankNum===1?'rank-1':rankNum===2?'rank-2':rankNum===3?'rank-3':'rank-other';
     const rankIcon=rankNum<=3?['🥇','🥈','🥉'][rankNum-1]:rankNum;
-    const thuStr=v[3]?`Thu: ${v[3]}`:'';
-    const friStr=v[4]?`Fri: ${v[4]}`:'';
+    const fmtRound=(raw,par)=>{if(!raw||raw==='0')return'';const p=par!==null&&par!==undefined?(par<0?` (${par})`:par>0?` (+${par})`:' (E)'):'';return raw+p;};
+    const thuStr=fmtRound(v[3],sd.thuPar);
+    const friStr=fmtRound(v[4],sd.friPar);
+    const satStr=fmtRound(v[5],sd.satPar);
+    const sunStr=fmtRound(v[6],sd.sunPar);
     const totalPar=sd.totalPar!==null&&sd.totalPar!==undefined?fmtPar(sd.totalPar):'<span style="color:rgba(253,246,227,.3)">—</span>';
     const prizeStr=pi?`${fmt$(pi.prize)}${pi.isTie?' split ×'+pi.count:''}`:'';
     return`<div class="mobile-card">
@@ -433,8 +434,10 @@ async function loadOverall(){
         <div class="mobile-card-team">${team}</div>
         <div class="mobile-card-owner">${v[2]||''}</div>
         <div class="mobile-card-scores">
-          ${thuStr?`<div class="mobile-card-score">${thuStr}</div>`:''}
-          ${friStr?`<div class="mobile-card-score">${friStr}</div>`:''}
+          ${thuStr?`<div class="mobile-card-score">Thu: <span>${thuStr}</span></div>`:''}
+          ${friStr?`<div class="mobile-card-score">Fri: <span>${friStr}</span></div>`:''}
+          ${satStr?`<div class="mobile-card-score">Sat: <span>${satStr}</span></div>`:''}
+          ${sunStr?`<div class="mobile-card-score">Sun: <span>${sunStr}</span></div>`:''}
           ${prizeStr?`<div class="mobile-card-score" style="color:#7dd9a0">${prizeStr}</div>`:''}
         </div>
       </div>
@@ -541,7 +544,9 @@ function renderDaily(){
     return;
   }
 
-  const dailyPrizes=calcTies(teams.map((t,i)=>({team:t.team,score:t.score})),{1:100});
+  // No daily prize for Sunday
+  const isSunday=rIdx===3;
+  const dailyPrizes=isSunday?{}:calcTies(teams.map((t,i)=>({team:t.team,score:t.score})),{1:100});
 
   document.getElementById('daily-body').innerHTML=teams.map((t,i)=>{
     const pi=dailyPrizes[t.team];
@@ -572,10 +577,14 @@ function renderDaily(){
         <div class="mobile-card-scores">
           <div class="mobile-card-score">Score: <span>${scoreStr}</span></div>
           <div class="mobile-card-score">To Par: <span>${parStr}</span></div>
-          ${prizeStr?`<div class="mobile-card-score">${prizeStr}</div>`:''}
         </div>
       </div>
-      <div class="mobile-card-right">${statusBadge(t.status)}</div>
+      <div class="mobile-card-right">
+        <div class="mobile-card-total">${scoreStr}</div>
+        <div class="mobile-card-topar">${parStr}</div>
+        <div style="margin-top:4px">${statusBadge(t.status)}</div>
+        ${prizeStr?`<div style="margin-top:3px">${prizeStr}</div>`:''}
+      </div>
     </div>`;
   }).join('');
 
@@ -586,12 +595,14 @@ function renderDaily(){
   const name=leader?leader.team:'—';
   const isTie=pi?pi.isTie:false;
 
-  document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
-  document.getElementById(`b-${roundKey}-leader`).textContent=name;
-  document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
-  document.getElementById(`p-${roundKey}-amt`).textContent=fmt$(amt);
-  document.getElementById(`p-${roundKey}-leader`).textContent=name;
-  document.getElementById(`p-${roundKey}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
+  if(!isSunday){
+    document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
+    document.getElementById(`b-${roundKey}-leader`).textContent=name;
+    document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
+    document.getElementById(`p-${roundKey}-amt`).textContent=fmt$(amt);
+    document.getElementById(`p-${roundKey}-leader`).textContent=name;
+    document.getElementById(`p-${roundKey}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
+  }
 }
 
 // Live ESPN
