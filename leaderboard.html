@@ -18,10 +18,10 @@ body{font-family:'DM Sans',sans-serif;color:var(--cream);min-height:100vh;overfl
 .banner-title{font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .banner-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);}
 .banner-slots{display:flex;flex-direction:column;gap:8px;} .banner-row{display:flex;gap:10px;width:100%;} .banner-row-label{font-size:.58rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(253,246,227,.3);margin-bottom:4px;} .banner-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.2),transparent);}
-.banner-slot{background:rgba(3,12,6,.5);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:10px 14px;flex:1;min-width:110px;backdrop-filter:blur(8px);}
-.banner-slot .slot-label{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,246,227,.4);margin-bottom:4px;}
-.banner-slot .slot-prize{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light);line-height:1;}
-.banner-slot .slot-leader{font-size:.75rem;color:rgba(253,246,227,.6);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;}
+.banner-slot{background:rgba(3,12,6,.5);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:10px 14px;flex:1;min-width:110px;backdrop-filter:blur(8px);text-align:center;transition:all .3s ease;}
+.banner-slot .slot-label{font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(253,246,227,.4);margin-bottom:4px;text-align:center;}
+.banner-slot .slot-prize{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:var(--gold-light);line-height:1;text-align:center;}
+.banner-slot .slot-leader{font-size:.72rem;color:rgba(253,246,227,.6);margin-top:3px;line-height:1.4;}
 .banner-slot .slot-tie{font-size:.62rem;color:rgba(201,168,76,.6);margin-top:2px;}
 .banner-slot.daily-slot .slot-prize{color:#7dd9a0;}
 header{text-align:center;padding:36px 20px 20px}
@@ -204,17 +204,14 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   <div class="banner-slots">
     <div class="banner-row-label">🏆 Overall Standings</div>
     <div class="banner-row">
-      <div class="banner-slot"><div class="slot-label">1st Place</div><div class="slot-prize" id="b-1st-prize">$500</div><div class="slot-leader" id="b-1st-leader">—</div><div class="slot-tie" id="b-1st-tie"></div></div>
-      <div class="banner-slot"><div class="slot-label">2nd Place</div><div class="slot-prize" id="b-2nd-prize">$225</div><div class="slot-leader" id="b-2nd-leader">—</div><div class="slot-tie" id="b-2nd-tie"></div></div>
-      <div class="banner-slot"><div class="slot-label">3rd Place</div><div class="slot-prize" id="b-3rd-prize">$125</div><div class="slot-leader" id="b-3rd-leader">—</div><div class="slot-tie" id="b-3rd-tie"></div></div>
-      <div class="banner-slot"><div class="slot-label">4th Place</div><div class="slot-prize" id="b-4th-prize">$50</div><div class="slot-leader" id="b-4th-leader">—</div><div class="slot-tie" id="b-4th-tie"></div></div>
+      <div id="overall-banner-row" style="display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap;"></div>
     </div>
     <div class="banner-divider"></div>
-    <div class="banner-row-label">📅 Daily Low Score — Final Results</div>
+    <div class="banner-row-label">📅 Daily Low Score</div>
     <div class="banner-row">
-      <div class="banner-slot daily-slot"><div class="slot-label">Thursday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">Cornflakes</div><div class="slot-tie" style="color:#7dd9a0">Colin Carroll · 278</div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Friday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">BNutt2</div><div class="slot-tie" style="color:#7dd9a0">Blair Nutting · 273</div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Saturday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">nickwizzz</div><div class="slot-tie" style="color:#7dd9a0">Nick Wisniewski · 271</div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Thursday</div><div class="slot-prize" id="b-thu-prize">$100</div><div class="slot-leader" id="b-thu-leader">—</div><div class="slot-tie" id="b-thu-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Friday</div><div class="slot-prize" id="b-fri-prize">$100</div><div class="slot-leader" id="b-fri-leader">—</div><div class="slot-tie" id="b-fri-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize" id="b-sat-prize">$100</div><div class="slot-leader" id="b-sat-leader">—</div><div class="slot-tie" id="b-sat-tie"></div></div>
     </div>
   </div>
 </div>
@@ -228,24 +225,12 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 
 <!-- POOL LEADERBOARD -->
 <div class="panel active" id="panel-pool">
-  <div class="section-label">🏆 Overall Leaderboard</div>
-  <div class="board-card">
-    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
-    <div class="table-scroll desktop-table">
-    <table id="overall-table" style="display:none">
-      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="num col-score">Thu</th><th class="num col-score">Fri</th><th class="num col-score">Sat</th><th class="num col-score">Sun</th><th class="num col-score">Total</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
-      <tbody id="overall-body"></tbody>
-    </table>
-    </div>
-    <div id="overall-cards" class="mobile-card-list"></div>
-    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
-  </div>
   <div class="section-label">📅 Daily Leaderboard</div>
   <div class="round-selector">
-    <button class="round-btn" data-round="0">Thursday</button>
+    <button class="round-btn active" data-round="0">Thursday</button>
     <button class="round-btn" data-round="1">Friday</button>
     <button class="round-btn" data-round="2">Saturday</button>
-    <button class="round-btn active" data-round="3">Sunday</button>
+    <button class="round-btn" data-round="3">Sunday</button>
   </div>
   <div class="board-card">
     <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
@@ -257,6 +242,18 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
     </div>
     <div id="daily-cards" class="mobile-card-list"></div>
     <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
+  </div>
+  <div class="section-label">🏆 Overall Leaderboard</div>
+  <div class="board-card">
+    <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
+    <div class="table-scroll desktop-table">
+    <table id="overall-table" style="display:none">
+      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="num col-score">Thu</th><th class="num col-score">Fri</th><th class="num col-score">Sat</th><th class="num col-score">Sun</th><th class="num col-score">Total</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
+      <tbody id="overall-body"></tbody>
+    </table>
+    </div>
+    <div id="overall-cards" class="mobile-card-list"></div>
+    <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
   </div>
   <div class="rules-strip">
     <h3>📋 Quick Rules</h3>
@@ -302,9 +299,9 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   <div class="payout-grid">
     <div class="payout-section">
       <div class="payout-section-header"><h3>📅 Daily Payouts</h3></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Thursday Low Score ✓</div><div class="payout-leader">Cornflakes — Colin Carroll</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 278 · FINAL</div></div><div class="payout-amount">$100</div></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Friday Low Score ✓</div><div class="payout-leader">BNutt2 — Blair Nutting</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 273 · FINAL</div></div><div class="payout-amount">$100</div></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Saturday Low Score ✓</div><div class="payout-leader">nickwizzz — Nick Wisniewski</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 271 · FINAL</div></div><div class="payout-amount">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Thursday Low Score</div><div class="payout-leader" id="p-thu-leader">—</div><div class="payout-tie-note" id="p-thu-tie"></div></div><div class="payout-amount" id="p-thu-amt">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Friday Low Score</div><div class="payout-leader" id="p-fri-leader">—</div><div class="payout-tie-note" id="p-fri-tie"></div></div><div class="payout-amount" id="p-fri-amt">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Saturday Low Score</div><div class="payout-leader" id="p-sat-leader">—</div><div class="payout-tie-note" id="p-sat-tie"></div></div><div class="payout-amount" id="p-sat-amt">$100</div></div>
       <div class="payout-total-row"><span>Daily Total</span><span>$300</span></div>
     </div>
     <div class="payout-section">
@@ -347,26 +344,27 @@ function statusBadge(s){const u=(s||'ACTIVE').toUpperCase();return`<span class="
 function rankCell(rank,i){const n=parseInt(rank)||(i+1);const cls=n===1?'rank-1':n===2?'rank-2':n===3?'rank-3':'rank-other';const icon=n<=3?['🥇','🥈','🥉'][n-1]:rank;return`<td class="rank-cell ${cls}">${icon}</td>`;}
 function fmt$(n){if(n===Math.floor(n))return'$'+n.toLocaleString();return'$'+n.toFixed(2);}
 
-// Helper: get current round index based on CST date
-function getCurrentRoundIdx(){
-  const cst=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Chicago'}));
-  const d=cst.getDate(),m=cst.getMonth()+1,y=cst.getFullYear();
-  if(y===2026&&m===4){
-    if(d===9) return 0;
-    if(d===10) return 1;
-    if(d===11) return 2;
-    if(d>=12) return 3;
-  }
-  return 0;
-}
-
 // Tabs
 document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('panel-'+b.dataset.tab).classList.add('active');});});
 document.querySelectorAll('.round-btn').forEach(b=>{b.addEventListener('click',()=>{document.querySelectorAll('.round-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDaily();});});
 
 // Auto-detect current round based on date (CST)
 function autoDetectRound(){
-  const roundIdx=getCurrentRoundIdx();
+  const now = new Date();
+  const cst = new Date(now.toLocaleString('en-US',{timeZone:'America/Chicago'}));
+  const month = cst.getMonth()+1;
+  const day   = cst.getDate();
+  const year  = cst.getFullYear();
+
+  let roundIdx = 0;
+  if(year===2026 && month===4){
+    if(day===9)       roundIdx=0; // Thu
+    else if(day===10) roundIdx=1; // Fri
+    else if(day===11) roundIdx=2; // Sat
+    else if(day===12) roundIdx=3; // Sun
+    else if(day>12)   roundIdx=3; // After Sun keep on Sun
+  }
+
   document.querySelectorAll('.round-btn').forEach((b,i)=>{
     b.classList.toggle('active', i===roundIdx);
   });
@@ -447,27 +445,60 @@ async function loadOverall(){
       </div>
     </div>`;
   }).join('');
-    // Update banner + payout tab overall
-    [1,2,3,4].forEach((place,idx)=>{
-      const id=['1st','2nd','3rd','4th'][idx];
-      const base=[500,225,125,50][idx];
-      const inPlace=sortedRows.filter((r,i)=>(parseInt(overallData[i]?Object.values(overallData[i])[0]:0)||(i+1))===place);
-      const pi=inPlace.length>0?prizes[inPlace[0].team]:null;
-      const amt=pi?pi.prize:base;
-      const leader=inPlace.length>0?inPlace[0].team:'—';
-      const isTie=pi?pi.isTie:false;
-      document.getElementById(`b-${id}-prize`).textContent=fmt$(amt);
-      document.getElementById(`b-${id}-leader`).textContent=leader;
-      document.getElementById(`b-${id}-tie`).textContent=isTie?`split ×${pi.count}`:'';
-      document.getElementById(`p-${id}-amt`).textContent=fmt$(amt);
-      document.getElementById(`p-${id}-leader`).textContent=leader;
-      document.getElementById(`p-${id}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
-    });
+    // Update banner — merged slots for ties
+  const basePrizes=[500,225,125,50];
+  const placeLabels=['1st Place','2nd Place','3rd Place','4th Place'];
+  const prizeMap={1:500,2:225,3:125,4:50};
+  const bannerIds=['1st','2nd','3rd','4th'];
+
+  // Build prize groups
+  const prizeGroups=[];
+  let ri=0;
+  while(ri<sortedRows.length&&prizeGroups.length<4){
+    const team=sortedRows[ri].team;
+    const pi=prizes[team];
+    if(pi){
+      const place=prizeGroups.length+1;
+      const groupTeams=sortedRows.slice(ri,ri+(pi.isTie?pi.count:1)).map(r=>r.team);
+      prizeGroups.push({place,teams:groupTeams,prize:pi.prize,isTie:pi.isTie,count:pi.isTie?pi.count:1});
+      ri+=pi.isTie?pi.count:1;
+    } else { ri++; }
+  }
+
+  // Render merged banner slots
+  const bannerRow=document.getElementById('overall-banner-row');
+  bannerRow.innerHTML=prizeGroups.map(g=>{
+    const label=g.isTie?`T-${g.place}`:placeLabels[g.place-1];
+    const teamNames=g.teams.map(t=>`<div style="font-size:.72rem;color:rgba(253,246,227,.75);margin-top:3px;overflow:hidden;text-overflow:ellipsis;">${t}</div>`).join('');
+    const tieInfo=g.isTie?`<div style="font-size:.6rem;color:rgba(201,168,76,.6);margin-top:4px;">${fmt$(g.prize)} each · split ×${g.count}</div>`:'';
+    return`<div class="banner-slot" style="flex:${g.count};min-width:${g.count>1?'200px':'120px'};text-align:center;">
+      <div class="slot-label" style="text-align:center;">${label}</div>
+      <div class="slot-prize" style="text-align:center;">${fmt$(g.prize)}</div>
+      ${teamNames}
+      ${tieInfo}
+    </div>`;
+  }).join('');
+
+  // Also update payouts tab
+  bannerIds.forEach((id,idx)=>{
+    const g=prizeGroups[idx];
+    if(g){
+      document.getElementById(`p-${id}-amt`).textContent=fmt$(g.prize);
+      document.getElementById(`p-${id}-leader`).textContent=g.teams.join(' & ');
+      document.getElementById(`p-${id}-tie`).textContent=g.isTie?`Split between ${g.count} teams — ${fmt$(g.prize)} each`:'';
+    } else {
+      document.getElementById(`p-${id}-amt`).textContent=fmt$(basePrizes[idx]);
+      document.getElementById(`p-${id}-leader`).textContent='—';
+      document.getElementById(`p-${id}-tie`).textContent='';
+    }
+  });
   }catch(e){document.getElementById('overall-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load</span>';}
 }
 
 // Daily
 async function loadDaily(){
+  // Daily data now comes from Team_Standings which has all rounds
+  // We use standingsData which is loaded by loadStandings()
   renderDaily();
 }
 function renderDaily(){
@@ -482,23 +513,27 @@ function renderDaily(){
   const roundKeys=['thu','fri','sat','sun'];
   const roundKey=roundKeys[rIdx]||'thu';
 
+  // Build sorted rows from standingsData
   const teams=Object.entries(standingsData).map(([team,sd])=>({
     team,
-    owner:'',
+    owner:'', // owner not in standings, will look up from overallData
     score:parseFloat(sd[rawKeys[rIdx]])||null,
     par:sd[parKeys[rIdx]],
     status:sd.status||'ACTIVE'
   })).filter(r=>r.team&&r.score!==null&&!isNaN(r.score)&&r.score>0);
 
+  // Add owner names from overallData
   teams.forEach(t=>{
     const od=overallData.find(r=>Object.values(r)[0]===t.team||Object.values(r)[1]===t.team);
     if(od){const v=Object.values(od);t.owner=v[2]||'';}
   });
 
+  // Sort by score ascending
   teams.sort((a,b)=>a.score-b.score);
 
   if(!teams.length){
     document.getElementById('daily-empty').style.display='block';
+    // Reset banner for this round
     document.getElementById(`b-${roundKey}-leader`).textContent='—';
     document.getElementById(`b-${roundKey}-tie`).textContent='';
     return;
@@ -511,12 +546,14 @@ function renderDaily(){
     let ph='<span style="color:rgba(253,246,227,.2)">—</span>';
     if(pi)ph=`<span class="prize-cell">${fmt$(pi.prize)}${pi.isTie?`<span class="prize-tie">split ×${pi.count}</span>`:''}</span>`;
     const scoreDisplay=t.score?t.score:'<span style="color:rgba(253,246,227,.22)">—</span>';
+    // Only show to-par if score looks like a complete round (4 players × ~70 = ~280 minimum)
     const parDisplay=(t.par!==null&&t.par!==undefined)?fmtPar(t.par):'<span style="color:rgba(253,246,227,.22)">—</span>';
     const dRankNum=i+1;const dRankCls=dRankNum===1?'rank-1':dRankNum===2?'rank-2':dRankNum===3?'rank-3':'rank-other';const dRankIcon=dRankNum<=3?['🥇','🥈','🥉'][dRankNum-1]:dRankNum;
     return`<tr style="animation-delay:${i*.04}s"><td class="rank-cell ${dRankCls} sticky-rank">${dRankIcon}</td><td class="sticky-team"><div class="team-name">${t.team}</div></td><td style="color:rgba(253,246,227,.45);font-size:.83rem">${t.owner}</td><td class="num score-total">${scoreDisplay}</td><td class="num">${parDisplay}</td><td>${statusBadge(t.status)}</td></tr>`;
   }).join('');
   document.getElementById('daily-table').style.display='table';
 
+  // Mobile cards
   document.getElementById('daily-cards').innerHTML=teams.map((t,i)=>{
     const pi=dailyPrizes[t.team];
     const rankNum=i+1;
@@ -540,7 +577,19 @@ function renderDaily(){
     </div>`;
   }).join('');
 
-  // Daily winners for Thu/Fri/Sat are hardcoded — no dynamic update needed
+  // Update banner and payouts tab
+  const leader=teams[0];
+  const pi=leader?dailyPrizes[leader.team]:null;
+  const amt=pi?pi.prize:100;
+  const name=leader?leader.team:'—';
+  const isTie=pi?pi.isTie:false;
+
+  document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
+  document.getElementById(`b-${roundKey}-leader`).textContent=name;
+  document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
+  document.getElementById(`p-${roundKey}-amt`).textContent=fmt$(amt);
+  document.getElementById(`p-${roundKey}-leader`).textContent=name;
+  document.getElementById(`p-${roundKey}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
 }
 
 // Live ESPN
@@ -556,6 +605,9 @@ async function loadLive(){
       const tr=c.score||'';let tp=tr==='E'?0:(parseInt(tr)||tr);
       const dr=ls.length?(ls[ls.length-1]?.value??''):'';let td=dr==='E'?0:(parseInt(dr)||dr);
       const thru=c.status?.thru??c.status?.displayValue??'F';const sn=(c.status?.name||'').toLowerCase();
+      // Get current round index from number of completed rounds
+      // Get ESPN's own per-round to-par from linescores
+      // linescores array has value=raw score and displayValue=to-par for each round
       const roundScores=ls.map(l=>({
         raw:l.value??'',
         topar:l.displayValue??''
@@ -563,17 +615,19 @@ async function loadLive(){
       while(roundScores.length<4) roundScores.push({raw:'',topar:''});
 
       liveScores[name]={
-        topar:tp,
-        today:td,
+        topar:tp,           // tournament to-par from ESPN
+        today:td,           // today's raw score
         thru,
+        // Raw round scores
         r1:roundScores[0].raw, r2:roundScores[1].raw,
         r3:roundScores[2].raw, r4:roundScores[3].raw,
+        // ESPN's own to-par per round
         r1par:roundScores[0].topar, r2par:roundScores[1].topar,
         r3par:roundScores[2].topar, r4par:roundScores[3].topar,
         pos:c.status?.position?.abbreviation||(competitors.indexOf(c)+1),
         isMC:sn.includes('cut'),
         isWD:sn.includes('wd')||sn.includes('withdraw'),
-        period:c.status?.period||1,
+        period:c.status?.period||1,        // current round number
         finished:c.status?.type?.completed||false
       };
     });
@@ -614,6 +668,7 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
+  // ── MISSED CUT ──
   if(live.isMC){
     const r1str=live.r1par?`R1: ${live.r1par} (${live.r1})`:'';
     const r2str=live.r2par?` · R2: ${live.r2par} (${live.r2})`:'';
@@ -627,6 +682,7 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
+  // ── WITHDRAWN ──
   if(live.isWD){
     return`<div class="player-mini-card" style="border-color:rgba(100,100,100,.3);opacity:.6">
       <div class="tier-badge">${tier}</div>
@@ -636,10 +692,12 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
+  // ── ACTIVE PLAYER ──
   const topar=live.topar;
   const thru=live.thru;
   const period=live.period||1;
 
+  // Detect truly complete rounds by raw score range (65-95 = valid 18-hole score)
   const r1raw=parseInt(live.r1)||0;
   const r2raw=parseInt(live.r2)||0;
   const r3raw=parseInt(live.r3)||0;
@@ -649,9 +707,11 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   const r3done=r3raw>=65&&r3raw<=95;
   const r4done=r4raw>=65&&r4raw<=95;
 
+  // Masters 2026 official cut line: 149 (R1+R2 combined, +5 over 36-hole par)
   const MASTERS_CUT = 149;
-  const missedCut = r1done && r2done && (r1raw + r2raw) >= MASTERS_CUT;
+  const missedCut = r1done && r2done && (r1raw + r2raw) > MASTERS_CUT;
 
+  // If player missed cut, show MC card
   if(missedCut){
     const r1par=r1raw-72; const r2par=r2raw-72;
     const r1str=`R1: ${r1par<0?r1par:r1par>0?'+'+r1par:'E'} (${r1raw})`;
@@ -666,11 +726,15 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     </div>`;
   }
 
+  // Current round in progress
   const currentRound=r4done?5:r3done?4:r2done?3:r1done?2:1;
-  const isPlaying=!r4done&&(currentRound<=4);
+  const isPlaying=!r4done&&(currentRound<=4); // still playing if not all rounds done
+
+  // Round complete badge
   const allDone=live.finished&&!isPlaying;
   const roundBadge=allDone?'<span style="font-size:.58rem;color:#7dd9a0;margin-left:6px">✓ F</span>':'';
 
+  // Thru display — use raw score range to detect truly complete rounds
   let thruDisplay='';
   if(!isPlaying){
     thruDisplay='<div class="live-thru" style="color:#7dd9a0">✓ Round Complete</div>';
@@ -680,13 +744,16 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     thruDisplay='<div class="live-thru" style="color:var(--gold)">🔴 In Progress</div>';
   }
 
+  // Today's live round progress (ESPN to-par for current round)
   let todayDisplay='';
   if(isPlaying){
+    // Today's live to-par = tournament total minus all completed previous rounds
     const prevRoundsPar=(r1done?(r1raw-72):0)+(r2done?(r2raw-72):0)+(r3done?(r3raw-72):0);
     const todayPar=parseFloat(live.topar)-prevRoundsPar;
     if(!isNaN(todayPar)){
       const pStr=todayPar<0?String(todayPar):todayPar>0?'+'+todayPar:'E';
       const pCol=todayPar<0?'#f0b84a':todayPar>0?'#f08080':'rgba(253,246,227,.7)';
+      // Thru hole — use raw partial score as proxy for holes played if thru not reliable
       const holesPlayed=r2raw>0&&r2raw<65?Math.round(r2raw/4):
                         r1raw>0&&r1raw<65?Math.round(r1raw/4):null;
       const thruStr=thru&&!isNaN(parseInt(thru))?` · Hole ${thru}`:
@@ -695,12 +762,17 @@ function pCard(tier,name,isCounting=false,isDropped=false){
     }
   }
 
+  // Completed round history using ESPN's own to-par values
+  // Round history — only show truly complete rounds (65-90 raw score)
   const histParts=[];
   if(r1done){const p=r1raw-72;histParts.push(`R1: ${p<0?p:p>0?'+'+p:'E'} (${r1raw})`);}
   if(r2done){const p=r2raw-72;histParts.push(`R2: ${p<0?p:p>0?'+'+p:'E'} (${r2raw})`);}
   if(r3done){const p=r3raw-72;histParts.push(`R3: ${p<0?p:p>0?'+'+p:'E'} (${r3raw})`);}
   if(r4done){const p=r4raw-72;histParts.push(`R4: ${p<0?p:p>0?'+'+p:'E'} (${r4raw})`);}
   const roundHistory=histParts.length>0?`<div class="live-rounds">${histParts.join(' · ')}</div>`:'';
+
+  // Cut badge removed for active players — cut is now official
+  // MC players are handled separately above
   const cutBadge='';
 
   return`<div class="player-mini-card ${isCounting?'card-counting':isDropped?'card-dropped':''}">
@@ -714,28 +786,20 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   </div>`;
 }
 
+
 function renderTeamCard(e){
   const tn=e['Team_Name']||'—',own=e['Participant_Name']||'',st=e['Final_Entry_Status']||'VALID',alt=e['Alternate']||'—';
   const al=getLive(alt);const as=al?(al.isMC?'MC':al.isWD?'WD':toParHTML(al.topar)):'Standby';
 
+  // Calculate best 4 of 5 — get to-par for each player, sort, mark bottom 4 as counting
   const players=[e['Tier_A']||'',e['Tier_B']||'',e['Tier_C']||'',e['Tier_D1']||'',e['Tier_D2']||''];
-
-  // ── FIX: Drop is based on today's round raw score, not overall to-par ──
-  const rIdx=getCurrentRoundIdx();
-  const roundRawKeys=['r1','r2','r3','r4'];
-  const roundKey=roundRawKeys[rIdx];
-
   const playerScores=players.map(name=>{
     const live=getLive(name);
-    if(!live) return{name,score:999,isMC:false,isWD:false};
-    if(live.isMC||live.isWD) return{name,score:80,isMC:live.isMC,isWD:live.isWD};
-    const raw=parseFloat(live[roundKey])||0;
-    // Use raw round score if it looks like a valid 18-hole score; otherwise fall back
-    const score=raw>=60?raw:(parseFloat(live.topar)||0)+1000;
-    return{name,score,isMC:false,isWD:false};
+    if(!live||live.isMC||live.isWD) return{name,topar:999,isMC:live?live.isMC:false,isWD:live?live.isWD:false};
+    return{name,topar:parseFloat(live.topar)||0,isMC:false,isWD:false};
   });
-  // ── END FIX ──
 
+  // Count missed cuts for penalty/eliminated logic
   const mcCount=playerScores.filter(p=>p.isMC).length;
   const wdCount=playerScores.filter(p=>p.isWD).length;
   const totalMC=mcCount+wdCount;
@@ -746,8 +810,8 @@ function renderTeamCard(e){
     teamStatusBanner='<div class="team-status-banner team-penalty">⚠️ Penalty — 2 Missed Cuts</div>';
   }
 
-  // Sort by score ascending — lowest (best) raw score counts, highest dropped
-  const sorted=[...playerScores].sort((a,b)=>a.score-b.score);
+  // Sort by to-par ascending to find best 4
+  const sorted=[...playerScores].sort((a,b)=>a.topar-b.topar);
   const counting=new Set(sorted.slice(0,4).map(p=>p.name));
   const dropped=sorted.length>=5?sorted[4].name:'';
 
@@ -770,6 +834,8 @@ async function loadStandings(){
     standingsData={};
     rows.forEach(r=>{
       if(r['Team_Name']){
+        // A complete round score for best-4-of-5 should be >= 200 (4 x ~50 minimum)
+        // If below 200 the round is in progress - don't show to-par
         const thuRaw=parseFloat(r['Thu_Raw'])||0;
         const friRaw=parseFloat(r['Fri_Raw'])||0;
         const satRaw=parseFloat(r['Sat_Raw'])||0;
