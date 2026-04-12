@@ -210,11 +210,11 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
       <div class="banner-slot"><div class="slot-label">4th Place</div><div class="slot-prize" id="b-4th-prize">$50</div><div class="slot-leader" id="b-4th-leader">—</div><div class="slot-tie" id="b-4th-tie"></div></div>
     </div>
     <div class="banner-divider"></div>
-    <div class="banner-row-label">📅 Daily Low Score</div>
+    <div class="banner-row-label">📅 Daily Low Score — Final Results</div>
     <div class="banner-row">
-      <div class="banner-slot daily-slot"><div class="slot-label">Thursday</div><div class="slot-prize" id="b-thu-prize">$100</div><div class="slot-leader" id="b-thu-leader">—</div><div class="slot-tie" id="b-thu-tie"></div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Friday</div><div class="slot-prize" id="b-fri-prize">$100</div><div class="slot-leader" id="b-fri-leader">—</div><div class="slot-tie" id="b-fri-tie"></div></div>
-      <div class="banner-slot daily-slot"><div class="slot-label">Saturday</div><div class="slot-prize" id="b-sat-prize">$100</div><div class="slot-leader" id="b-sat-leader">—</div><div class="slot-tie" id="b-sat-tie"></div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Thursday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">Cornflakes</div><div class="slot-tie" style="color:#7dd9a0">Colin Carroll · 278</div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Friday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">BNutt2</div><div class="slot-tie" style="color:#7dd9a0">Blair Nutting · 273</div></div>
+      <div class="banner-slot daily-slot"><div class="slot-label">Saturday ✓ Final</div><div class="slot-prize">$100</div><div class="slot-leader">nickwizzz</div><div class="slot-tie" style="color:#7dd9a0">Nick Wisniewski · 271</div></div>
     </div>
   </div>
 </div>
@@ -302,9 +302,9 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
   <div class="payout-grid">
     <div class="payout-section">
       <div class="payout-section-header"><h3>📅 Daily Payouts</h3></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Thursday Low Score</div><div class="payout-leader" id="p-thu-leader">—</div><div class="payout-tie-note" id="p-thu-tie"></div></div><div class="payout-amount" id="p-thu-amt">$100</div></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Friday Low Score</div><div class="payout-leader" id="p-fri-leader">—</div><div class="payout-tie-note" id="p-fri-tie"></div></div><div class="payout-amount" id="p-fri-amt">$100</div></div>
-      <div class="payout-row"><div><div class="payout-place">🏌️ Saturday Low Score</div><div class="payout-leader" id="p-sat-leader">—</div><div class="payout-tie-note" id="p-sat-tie"></div></div><div class="payout-amount" id="p-sat-amt">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Thursday Low Score ✓</div><div class="payout-leader">Cornflakes — Colin Carroll</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 278 · FINAL</div></div><div class="payout-amount">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Friday Low Score ✓</div><div class="payout-leader">BNutt2 — Blair Nutting</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 273 · FINAL</div></div><div class="payout-amount">$100</div></div>
+      <div class="payout-row"><div><div class="payout-place">🏌️ Saturday Low Score ✓</div><div class="payout-leader">nickwizzz — Nick Wisniewski</div><div class="payout-tie-note" style="color:#7dd9a0">Score: 271 · FINAL</div></div><div class="payout-amount">$100</div></div>
       <div class="payout-total-row"><span>Daily Total</span><span>$300</span></div>
     </div>
     <div class="payout-section">
@@ -540,18 +540,7 @@ function renderDaily(){
     </div>`;
   }).join('');
 
-  const leader=teams[0];
-  const pi=leader?dailyPrizes[leader.team]:null;
-  const amt=pi?pi.prize:100;
-  const name=leader?leader.team:'—';
-  const isTie=pi?pi.isTie:false;
-
-  document.getElementById(`b-${roundKey}-prize`).textContent=fmt$(amt);
-  document.getElementById(`b-${roundKey}-leader`).textContent=name;
-  document.getElementById(`b-${roundKey}-tie`).textContent=isTie?`split ×${pi.count}`:'';
-  document.getElementById(`p-${roundKey}-amt`).textContent=fmt$(amt);
-  document.getElementById(`p-${roundKey}-leader`).textContent=name;
-  document.getElementById(`p-${roundKey}-tie`).textContent=isTie?`Split between ${pi.count} teams — ${fmt$(amt)} each`:'';
+  // Daily winners for Thu/Fri/Sat are hardcoded — no dynamic update needed
 }
 
 // Live ESPN
@@ -661,7 +650,7 @@ function pCard(tier,name,isCounting=false,isDropped=false){
   const r4done=r4raw>=65&&r4raw<=95;
 
   const MASTERS_CUT = 149;
-  const missedCut = r1done && r2done && (r1raw + r2raw) > MASTERS_CUT;
+  const missedCut = r1done && r2done && (r1raw + r2raw) >= MASTERS_CUT;
 
   if(missedCut){
     const r1par=r1raw-72; const r2par=r2raw-72;
