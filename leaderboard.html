@@ -360,7 +360,8 @@ function autoDetectRound(){
   if(year===2026 && month===4){
     if(day===9)       roundIdx=0; // Thu
     else if(day===10) roundIdx=1; // Fri
-    else if(day>=11)  roundIdx=2; // Sat (no Sunday daily payout)
+    else if(day===11) roundIdx=2; // Sat
+    else if(day>=12)  roundIdx=3; // Sun
   }
 
   document.querySelectorAll('.round-btn').forEach((b,i)=>{
