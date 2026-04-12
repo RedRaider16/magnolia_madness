@@ -228,24 +228,6 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
 
 <!-- POOL LEADERBOARD -->
 <div class="panel active" id="panel-pool">
-  <div class="section-label">📅 Daily Leaderboard</div>
-  <div class="round-selector">
-    <button class="round-btn active" data-round="0">Thursday</button>
-    <button class="round-btn" data-round="1">Friday</button>
-    <button class="round-btn" data-round="2">Saturday</button>
-    <button class="round-btn" data-round="3">Sunday</button>
-  </div>
-  <div class="board-card">
-    <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
-    <div class="table-scroll desktop-table">
-    <table id="daily-table" style="display:none">
-      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="col-team">Owner</th><th class="num col-score">Score</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
-      <tbody id="daily-body"></tbody>
-    </table>
-    </div>
-    <div id="daily-cards" class="mobile-card-list"></div>
-    <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
-  </div>
   <div class="section-label">🏆 Overall Leaderboard</div>
   <div class="board-card">
     <div id="overall-loading" class="loading"><span class="spinner"></span>Loading standings…</div>
@@ -257,6 +239,24 @@ td.num{text-align:center;font-family:'DM Mono',monospace;font-size:.83rem;color:
     </div>
     <div id="overall-cards" class="mobile-card-list"></div>
     <div id="overall-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Standings appear once scores are submitted</p></div>
+  </div>
+  <div class="section-label">📅 Daily Leaderboard</div>
+  <div class="round-selector">
+    <button class="round-btn" data-round="0">Thursday</button>
+    <button class="round-btn" data-round="1">Friday</button>
+    <button class="round-btn" data-round="2">Saturday</button>
+    <button class="round-btn active" data-round="3">Sunday</button>
+  </div>
+  <div class="board-card">
+    <div id="daily-loading" class="loading"><span class="spinner"></span>Loading…</div>
+    <div class="table-scroll desktop-table">
+    <table id="daily-table" style="display:none">
+      <thead><tr><th class="num sticky-rank col-rank">#</th><th class="sticky-team col-team">Team</th><th class="col-team">Owner</th><th class="num col-score">Score</th><th class="num col-score">To Par</th><th class="col-status">Status</th></tr></thead>
+      <tbody id="daily-body"></tbody>
+    </table>
+    </div>
+    <div id="daily-cards" class="mobile-card-list"></div>
+    <div id="daily-empty" class="empty-state" style="display:none"><div class="empty-icon">⛳</div><p>Daily scores appear once the round begins</p></div>
   </div>
   <div class="rules-strip">
     <h3>📋 Quick Rules</h3>
