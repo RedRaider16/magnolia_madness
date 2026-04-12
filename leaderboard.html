@@ -446,6 +446,7 @@ async function loadOverall(){
     </div>`;
   }).join('');
     // Update banner — merged slots for ties
+  try{
   const basePrizes=[500,225,125,50];
   const placeLabels=['1st Place','2nd Place','3rd Place','4th Place'];
   const prizeMap={1:500,2:225,3:125,4:50};
@@ -492,6 +493,7 @@ async function loadOverall(){
       document.getElementById(`p-${id}-tie`).textContent='';
     }
   });
+  }catch(bannerErr){console.log('Banner error:',bannerErr);}
   }catch(e){document.getElementById('overall-loading').innerHTML='<span style="color:rgba(253,246,227,.3)">Unable to load</span>';}
 }
 
